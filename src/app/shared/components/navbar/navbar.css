@@ -1,0 +1,19 @@
+nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 24px;
+}
+
+nav h2 {
+  margin-right: auto;
+}
+
+nav a {
+  text-decoration: none;
+  color: #222;
+}
+
+nav a:hover {
+  color: #007bff;
+}
