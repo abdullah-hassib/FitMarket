@@ -6,7 +6,10 @@ export const routes: Routes = [
   { path: 'shop', component: ComingSoon },
   { path: 'memberships', component: ComingSoon },
   { path: 'student-fees', component: ComingSoon },
-  { path: 'payroll', component: ComingSoon },
+  {
+    path: 'payroll',
+    loadComponent: () => import('./features/payroll/pages/payroll-page/payroll-page').then((m) => m.PayrollPage),
+  },
   { path: 'budgets', component: ComingSoon },
 {
   path: 'login',
@@ -23,5 +26,5 @@ export const routes: Routes = [
   { path: 'profile', component: ComingSoon },
   { path: 'admin/products', component: ComingSoon },
 
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: '' },
 ];
