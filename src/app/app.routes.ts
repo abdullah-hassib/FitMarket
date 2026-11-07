@@ -14,7 +14,12 @@ export const routes: Routes = [
     import('./features/auth/login/login')
       .then(m => m.Login)
 },
-  { path: 'signup', component: ComingSoon },
+  {
+  path: 'signup',
+  loadComponent: () =>
+    import('./features/auth/signup/signup')
+      .then(m => m.Signup)
+},
   { path: 'profile', component: ComingSoon },
   { path: 'admin/products', component: ComingSoon },
 

@@ -1,4 +1,7 @@
+
 export type UserRole = 'admin' | 'accountant' | 'trainee';
+
+export type DemoCard = 'test-visa' | 'test-mastercard';
 
 export interface User {
   id: number;
@@ -6,5 +9,8 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
+
   profilePicture?: string;
+  preferences?: string[];
+  demoCard?: DemoCard;
 }

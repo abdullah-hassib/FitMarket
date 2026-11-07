@@ -1,0 +1,105 @@
+
+<section class="signup-container">
+  <h1>Join FitMarket</h1>
+  <p>Create your trainee account.</p>
+
+  @if (registered) {
+    <div class="success" role="status">
+      <h2>Account created successfully!</h2>
+      <p>You can now log in to FitMarket.</p>
+      <a routerLink="/login">Continue to Login</a>
+    </div>
+  } @else {
+
+    <form (ngSubmit)="onSubmit()" #signupForm="ngForm">
+
+      <label for="username">Username *</label>
+      <input
+        id="username"
+        name="username"
+        [(ngModel)]="username"
+        required
+        minlength="3"
+        autocomplete="username"
+      />
+
+      <label for="name">Full Name *</label>
+      <input
+        id="name"
+        name="name"
+        [(ngModel)]="name"
+        required
+      />
+
+      <label for="email">Email *</label>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        [(ngModel)]="email"
+        required
+        email
+      />
+
+      <label for="password">Demo Password *</label>
+      <input
+        id="password"
+        name="password"
+        type="password"
+        [(ngModel)]="password"
+        required
+        minlength="6"
+        autocomplete="new-password"
+      />
+
+      <label for="picture">Profile Picture URL (optional)</label>
+      <input
+        id="picture"
+        name="picture"
+        type="url"
+        [(ngModel)]="profilePicture"
+        placeholder="https://example.com/photo.jpg"
+      />
+
+      <label for="preferences">Fitness Preferences (optional)</label>
+      <input
+        id="preferences"
+        name="preferences"
+        [(ngModel)]="preferencesText"
+        placeholder="Weightlifting, Cardio, Yoga"
+      />
+
+      <label for="card">Demo Payment Method (optional)</label>
+      <select
+        id="card"
+        name="card"
+        [(ngModel)]="demoCard"
+      >
+        <option value="">No payment method</option>
+        <option value="test-visa">Test Visa ending 4242</option>
+        <option value="test-mastercard">Test Mastercard ending 4444</option>
+      </select>
+
+      <small>
+        Only fictional payment methods are supported.
+        Never enter real card details.
+      </small>
+
+      @if (errorMessage) {
+        <p class="error" role="alert">
+          {{ errorMessage }}
+        </p>
+      }
+
+      <button type="submit" [disabled]="signupForm.invalid">
+        Create Account
+      </button>
+
+    </form>
+
+    <p>
+      Already have an account?
+      <a routerLink="/login">Login</a>
+    </p>
+  }
+</section>
