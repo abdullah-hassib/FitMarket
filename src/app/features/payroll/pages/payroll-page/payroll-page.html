@@ -1,0 +1,49 @@
+<section class="payroll-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">FINANCE / PAYROLL</p>
+      <h1>Staff payroll</h1>
+      <p>Monthly salary, adjustments, and credited shop-sale commission.</p>
+    </div>
+    <button class="export" type="button" (click)="exportJson()">Export monthly JSON</button>
+  </header>
+
+  <section class="controls" aria-label="Payroll controls">
+    <label>Payroll month <input type="month" [ngModel]="selectedMonth()" (ngModelChange)="selectedMonth.set($event)" /></label>
+    <label>Demo role
+      <select [ngModel]="demoRole()" (ngModelChange)="demoRole.set($event)">
+        <option value="admin">Admin</option><option value="accountant">Accountant</option><option value="trainee">Trainee (view only)</option>
+      </select>
+    </label>
+    <label>Demo commission rate (%)
+      <input type="number" min="0" max="100" step="0.5" [ngModel]="commissionRatePercent()" (ngModelChange)="commissionRatePercent.set($event)" [disabled]="!canEdit()" />
+    </label>
+  </section>
+  <p class="notice">Commission rate is a visible, configurable demo setting pending the team’s agreed policy. It applies once per eligible sale to its post-discount total; unassigned and other-month sales are excluded.</p>
+
+  <section class="summary" aria-label="Payroll totals">
+    <article><span>Total base pay</span><strong>{{ totals().baseSalary | currency:'EGP':'symbol':'1.2-2' }}</strong></article>
+    <article><span>Total commission</span><strong>{{ totals().commission | currency:'EGP':'symbol':'1.2-2' }}</strong></article>
+    <article><span>Net payroll</span><strong>{{ totals().netSalary | currency:'EGP':'symbol':'1.2-2' }}</strong></article>
+  </section>
+
+  <div class="table-wrap">
+    <table>
+      <caption>Payroll earnings breakdown for {{ selectedMonth() }}</caption>
+      <thead><tr><th>Employee</th><th>Base salary</th><th>Allowances</th><th>Deductions</th><th>Eligible sales</th><th>Commission</th><th>Net salary</th></tr></thead>
+      <tbody>
+        @for (row of rows(); track row.employee.id) {
+          <tr>
+            <td><strong>{{ row.employee.name }}</strong><small>#{{ row.employee.id }} · {{ row.employee.jobTitle }}</small></td>
+            <td><input aria-label="Base salary for {{ row.employee.name }}" type="number" min="0" [ngModel]="row.baseSalary" (ngModelChange)="updateEmployee(row.employee.id, 'baseSalary', $event)" [disabled]="!canEdit()" /></td>
+            <td><input aria-label="Allowances for {{ row.employee.name }}" type="number" min="0" [ngModel]="row.allowances" (ngModelChange)="updateAdjustment(row.employee.id, 'allowances', $event)" [disabled]="!canEdit()" /></td>
+            <td><input aria-label="Deductions for {{ row.employee.name }}" type="number" min="0" [ngModel]="row.deductions" (ngModelChange)="updateAdjustment(row.employee.id, 'deductions', $event)" [disabled]="!canEdit()" /></td>
+            <td>{{ row.eligibleSalesCount }} / {{ row.eligibleSalesTotal | currency:'EGP':'symbol':'1.2-2' }}</td>
+            <td>{{ row.commission | currency:'EGP':'symbol':'1.2-2' }}</td>
+            <td class="net">{{ row.netSalary | currency:'EGP':'symbol':'1.2-2' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>
