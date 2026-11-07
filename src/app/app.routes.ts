@@ -8,7 +8,12 @@ export const routes: Routes = [
   { path: 'student-fees', component: ComingSoon },
   { path: 'payroll', component: ComingSoon },
   { path: 'budgets', component: ComingSoon },
-  { path: 'login', component: ComingSoon },
+{
+  path: 'login',
+  loadComponent: () =>
+    import('./features/auth/login/login')
+      .then(m => m.Login)
+},
   { path: 'signup', component: ComingSoon },
   { path: 'profile', component: ComingSoon },
   { path: 'admin/products', component: ComingSoon },
