@@ -1,11 +1,121 @@
-<nav>
-  <h2>FitMarket</h2>
 
-  <a routerLink="/">Home</a>
-  <a routerLink="/shop">Shop</a>
-  <a routerLink="/memberships">Memberships</a>
-  <a routerLink="/student-fees">Student Fees</a>
-  <a routerLink="/payroll">Payroll</a>
-  <a routerLink="/budgets">Budgets</a>
-  <a routerLink="/login">Login</a>
-</nav>
+<header class="site-header">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+
+    <!-- FitMarket Logo -->
+    <a routerLink="/" class="brand">
+      FitMarket
+    </a>
+
+    <!-- Account Controls -->
+    <div class="account-actions">
+
+      @if (auth.currentUser(); as user) {
+
+        <!-- Profile Picture -->
+        <a
+          routerLink="/profile"
+          class="profile-avatar"
+          [attr.aria-label]="'Open profile for ' + user.name"
+          title="My Profile"
+        >
+
+          @if (user.profilePicture) {
+            <img
+              [src]="user.profilePicture"
+              [alt]="user.name + ' profile picture'"
+            />
+          } @else {
+            <span aria-hidden="true">
+              {{ user.name.charAt(0).toUpperCase() }}
+            </span>
+          }
+
+        </a>
+
+        <!-- Logout -->
+        <button
+          type="button"
+          class="logout-btn"
+          (click)="logout()"
+        >
+          Logout
+        </button>
+
+      } @else {
+
+        <!-- Guest Account Controls -->
+        <a
+          routerLink="/login"
+          class="login-link"
+        >
+          Login
+        </a>
+
+        <a
+          routerLink="/signup"
+          class="signup-link"
+        >
+          Sign Up
+        </a>
+
+      }
+
+    </div>
+  </div>
+
+  <!-- MAIN NAVIGATION -->
+  <nav class="main-nav" aria-label="Main navigation">
+
+    <!-- Public Pages -->
+    <a routerLink="/">
+      Home
+    </a>
+
+    <a routerLink="/shop">
+      Shop
+    </a>
+
+    <a routerLink="/memberships">
+      Memberships
+    </a>
+
+    <!-- Logged-in Users -->
+    @if (auth.isLoggedIn()) {
+
+      <a routerLink="/student-fees">
+        Student Fees
+      </a>
+
+    }
+
+    <!-- Accountant and Admin -->
+    @if (
+      auth.currentRole() === 'admin' ||
+      auth.currentRole() === 'accountant'
+    ) {
+
+      <a routerLink="/payroll">
+        Payroll
+      </a>
+
+      <a routerLink="/budgets">
+        Budgets
+      </a>
+
+    }
+
+    <!-- Admin Only -->
+    @if (auth.currentRole() === 'admin') {
+
+      <a routerLink="/admin/users">
+        Manage Users
+      </a>
+
+    }
+
+  </nav>
+
+</header>

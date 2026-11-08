@@ -1,0 +1,89 @@
+
+<section class="user-management">
+
+  <h1>User Management</h1>
+
+  <p>
+    Manage FitMarket accounts and assign user roles.
+    Only administrators can access this page.
+  </p>
+
+  @if (message) {
+    <p role="status">{{ message }}</p>
+  }
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Account Type</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (account of users; track account.user.id) {
+          <tr>
+
+            <td>{{ account.user.username }}</td>
+
+            <td>{{ account.user.name }}</td>
+
+            <td>{{ account.user.email }}</td>
+
+            <td>
+              <select
+                [ngModel]="account.user.role"
+                (ngModelChange)="changeRole(account.user.id, $event)"
+                [disabled]="
+                  account.builtIn ||
+                  account.user.id === auth.currentUser()?.id
+                "
+                [attr.aria-label]="
+                  'Role for ' + account.user.username
+                "
+              >
+                <option value="trainee">Trainee</option>
+                <option value="accountant">Accountant</option>
+                <option value="admin">Admin</option>
+              </select>
+            </td>
+
+            <td>
+              {{ account.builtIn ? 'Built-in Demo' : 'Registered' }}
+            </td>
+
+            <td>
+              <button
+                type="button"
+                class="delete-btn"
+                (click)="deleteUser(account.user.id)"
+                [disabled]="
+                  account.builtIn ||
+                  account.user.id === auth.currentUser()?.id
+                "
+              >
+                Delete
+              </button>
+            </td>
+
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6">No user accounts found.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <p class="note">
+    Built-in demo accounts are protected.
+    Register additional accounts to test role changes and deletion.
+  </p>
+
+</section>

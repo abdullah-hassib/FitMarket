@@ -26,10 +26,10 @@ export class Signup {
   errorMessage = '';
   registered = false;
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     this.errorMessage = '';
 
-    const error = this.auth.signup({
+    const error = await this.auth.signup({
       username: this.username,
       name: this.name,
       email: this.email,

@@ -1,5 +1,6 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { Auth } from '../../../../core/auth/auth';
 import { FormsModule } from '@angular/forms';
 import { SaleRecord } from '../../../../models/sale.model';
 import { CommissionPolicy, Employee, MonthlyPayrollAdjustment } from '../../models/payroll.model';
@@ -15,8 +16,12 @@ export class PayrollPage {
   readonly selectedMonth = signal('2026-11');
   readonly commissionRatePercent = signal(5);
   // Temporary demo role. The route guard/current-user integration belongs to the shared auth module.
-  readonly demoRole = signal<'admin' | 'accountant' | 'trainee'>('accountant');
-  readonly canEdit = computed(() => this.demoRole() === 'admin' || this.demoRole() === 'accountant');
+  private readonly auth = inject(Auth);
+
+readonly canEdit = computed(() =>
+  this.auth.currentRole() === 'admin' ||
+  this.auth.currentRole() === 'accountant'
+);
   readonly employees = signal<Employee[]>([
     { id: 101, name: 'Nour Samir', jobTitle: 'Gym Manager', baseSalary: 12500 },
     { id: 102, name: 'Mina Adel', jobTitle: 'Sales Coach', baseSalary: 8000 },
@@ -61,6 +66,7 @@ export class PayrollPage {
   }
 
   exportJson(): void {
+    if (!this.canEdit()) return;
     const report = this.payroll.createReport(this.employees(), this.selectedMonth(), this.adjustments(), this.sales, this.policy());
     const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);

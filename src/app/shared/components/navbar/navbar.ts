@@ -1,10 +1,20 @@
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+
+import { Component, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { Auth } from '../../../core/auth/auth';
 
 @Component({
-  imports: [RouterLink],
   selector: 'app-navbar',
-  styleUrl: './navbar.css',
+  imports: [RouterLink],
   templateUrl: './navbar.html',
+  styleUrl: './navbar.css'
 })
-export class Navbar {}
+export class Navbar {
+  readonly auth = inject(Auth);
+  private readonly router = inject(Router);
+
+  logout(): void {
+    this.auth.logout();
+    void this.router.navigateByUrl('/login');
+  }
+}

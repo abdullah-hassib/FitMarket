@@ -16,20 +16,20 @@ export class Login {
   password = '';
   errorMessage = '';
 
-  onSubmit(): void {
-    this.errorMessage = '';
+  async onSubmit(): Promise<void> {
+  this.errorMessage = '';
 
-    const success = this.auth.login(
-      this.username,
-      this.password
-    );
+  const success = await this.auth.login(
+    this.username,
+    this.password
+  );
 
-    this.password = '';
+  this.password = '';
 
-    if (!success) {
-      this.errorMessage = 'Invalid username or password.';
-    }
+  if (!success) {
+    this.errorMessage = 'Invalid username or password.';
   }
+}
 
   logout(): void {
     this.auth.logout();
@@ -37,4 +37,7 @@ export class Login {
     this.password = '';
     this.errorMessage = '';
   }
+
+
+
 }
