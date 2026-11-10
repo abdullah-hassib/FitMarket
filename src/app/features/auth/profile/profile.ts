@@ -1,9 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { Auth } from '../../../core/auth/auth';
 
 @Component({
-  imports: [],
   selector: 'app-profile',
-  styleUrl: './profile.css',
+  imports: [RouterLink],
   templateUrl: './profile.html',
+  styleUrl: './profile.css',
 })
-export class Profile {}
+export class Profile {
+  readonly auth = inject(Auth);
+}
