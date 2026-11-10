@@ -1,0 +1,207 @@
+<section class="dashboard" aria-labelledby="budget-title">
+  @if (!store.allowed()) {
+    <div class="panel">
+      <h1 id="budget-title">Department budgets</h1>
+      <p>This page is available to accountants and admins.</p>
+      <a routerLink="/login">Log in to continue</a>
+    </div>
+  } @else {
+    <header>
+      <div>
+        <p class="eyebrow">FITMARKET / FINANCE</p>
+        <h1 id="budget-title">Department budgets</h1>
+        <p>Keep track of what comes in and what goes out.</p>
+      </div>
+      <span class="badge">Mock data only</span>
+    </header>
+    <p class="notice">
+      Balances are based on fictional records and are not verified business profit. Changes last
+      until the page is refreshed. Shop income appears when the shared sales source is connected.
+    </p>
+    <div class="filters panel" aria-label="Filter records and charts">
+      <label
+        >Department<select [ngModel]="department()" (ngModelChange)="department.set($event)">
+          <option>All</option>
+          @for (d of departments; track d) {
+            <option>{{ d }}</option>
+          }
+        </select></label
+      >
+      <label>From<input type="date" [ngModel]="from()" (ngModelChange)="from.set($event)" /></label>
+      <label>To<input type="date" [ngModel]="to()" (ngModelChange)="to.set($event)" /></label>
+      <button type="button" class="quiet" (click)="department.set('All'); from.set(''); to.set('')">
+        Clear filters
+      </button>
+    </div>
+    @if (filterError()) {
+      <p role="alert">{{ filterError() }}</p>
+    }
+    <div class="summary">
+      <article>
+        <p>Total income</p>
+        <strong>{{ totals().income | currency: 'EGP' : 'code' }}</strong>
+      </article>
+      <article>
+        <p>Total expenses</p>
+        <strong>{{ totals().expenses | currency: 'EGP' : 'code' }}</strong>
+      </article>
+      <article [class.negative]="totals().balance < 0">
+        <p>Department balance</p>
+        <strong>{{ totals().balance | currency: 'EGP' : 'code' }}</strong>
+      </article>
+    </div>
+    <section class="panel" aria-labelledby="chart-title">
+      <h2 id="chart-title">Across departments</h2>
+      <p>All amounts in EGP. Bars share one scale; negative balances point to a shortfall.</p>
+      <div class="legend">
+        <span>■ Income</span><span>▧ Expenses</span><span>● Balance (absolute size)</span>
+      </div>
+      <div class="charts" aria-hidden="true">
+        @for (s of summaries(); track s.department) {
+          <div>
+            <h3>{{ s.department }}</h3>
+            <div class="bar income" [style.width.%]="width(s.income)"></div>
+            <div class="bar expense" [style.width.%]="width(s.expenses)"></div>
+            <div
+              class="bar balance"
+              [class.loss]="s.balance < 0"
+              [style.width.%]="width(s.balance)"
+            ></div>
+          </div>
+        }
+      </div>
+      <div class="table-wrap">
+        <table>
+          <caption>
+            Chart values — current filters
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Department</th>
+              <th scope="col">Income (EGP)</th>
+              <th scope="col">Expenses (EGP)</th>
+              <th scope="col">Balance (EGP)</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (s of summaries(); track s.department) {
+              <tr>
+                <th scope="row">{{ s.department }}</th>
+                <td>{{ s.income | currency: 'EGP' : 'code' }}</td>
+                <td>{{ s.expenses | currency: 'EGP' : 'code' }}</td>
+                <td [class.negative]="s.balance < 0">{{ s.balance | currency: 'EGP' : 'code' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <section class="panel" aria-labelledby="form-title">
+      <h2 id="form-title">{{ editingId ? 'Edit record' : 'Add a record' }}</h2>
+      <p id="shop-rule">Shop income is read from sales. Only Shop expenses can be entered here.</p>
+      <form (ngSubmit)="save()" #form="ngForm">
+        <label class="wide"
+          >Description<input
+            id="record-description"
+            name="description"
+            [(ngModel)]="draft.description"
+            required
+            maxlength="160"
+        /></label>
+        <label
+          >Department<select
+            name="department"
+            [(ngModel)]="draft.department"
+            (ngModelChange)="draft.department === 'Shop' ? (draft.type = 'expense') : null"
+            aria-describedby="shop-rule"
+          >
+            <option>Training</option>
+            <option>Shop</option>
+            <option>Events</option>
+          </select></label
+        >
+        <label
+          >Type<select name="type" [(ngModel)]="draft.type">
+            <option value="income" [disabled]="draft.department === 'Shop'">Income</option>
+            <option value="expense">Expense</option>
+          </select></label
+        >
+        <label
+          >Amount (EGP)<input
+            name="amount"
+            type="number"
+            min="0.01"
+            max="100000000"
+            step="0.01"
+            [(ngModel)]="draft.amount"
+            required
+        /></label>
+        <label>Date<input name="date" type="date" [(ngModel)]="draft.date" required /></label>
+        <div class="wide actions">
+          <button type="submit" [disabled]="form.invalid">
+            {{ editingId ? 'Save changes' : 'Add record' }}
+          </button>
+          @if (editingId) {
+            <button type="button" class="quiet" (click)="cancel()">Cancel edit</button>
+          }
+        </div>
+      </form>
+      @if (error) {
+        <p role="alert" class="negative">{{ error }}</p>
+      }
+      <p role="status">{{ message }}</p>
+    </section>
+    <section class="panel">
+      <h2>Records</h2>
+      <div class="table-wrap">
+        <table>
+          <caption>
+            {{
+              rows().length
+            }}
+            records match the current filters
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Description</th>
+              <th scope="col">Department</th>
+              <th scope="col">Type</th>
+              <th scope="col">Amount</th>
+              <th scope="col">Source / action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of rows(); track row.id) {
+              <tr>
+                <td>{{ row.date }}</td>
+                <td>{{ row.description }}</td>
+                <td>{{ row.department }}</td>
+                <td>{{ row.type }}</td>
+                <td>{{ row.amount | currency: 'EGP' : 'code' }}</td>
+                <td>
+                  @if (row.source === 'manual') {
+                    <button
+                      class="quiet"
+                      type="button"
+                      (click)="edit(row)"
+                      [attr.aria-label]="'Edit ' + row.description"
+                    >
+                      Edit
+                    </button>
+                  } @else {
+                    Managed by Shop
+                  }
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6">No records in this range. Clear the filters or add a record.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+</section>
