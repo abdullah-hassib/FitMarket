@@ -1,0 +1,99 @@
+
+<section class="memberships-page">
+
+  <div class="page-heading">
+    <h1>FitMarket Memberships</h1>
+    <p>Choose the fitness membership that works for you.</p>
+  </div>
+
+  @if (message()) {
+    <p class="feedback" role="status">
+      {{ message() }}
+    </p>
+  }
+
+  <div class="plans-grid">
+    @for (plan of memberships.plans; track plan.id) {
+      <article class="plan-card">
+
+        <h2>{{ plan.name }}</h2>
+
+        <p class="price">
+          {{ plan.priceEGP }} EGP
+        </p>
+
+        <p class="duration">
+          Duration: {{ plan.durationMonths }} month(s)
+        </p>
+
+        <h3>Included benefits</h3>
+
+        <ul>
+          @for (benefit of plan.benefits; track benefit) {
+            <li>{{ benefit }}</li>
+          }
+        </ul>
+
+        @if (!auth.isLoggedIn()) {
+          <a routerLink="/login" class="subscribe-btn">
+            Login to Subscribe
+          </a>
+        } @else {
+          <button
+            type="button"
+            class="subscribe-btn"
+            [disabled]="!canSubscribe()"
+            (click)="subscribe(plan.id)"
+          >
+            Request Membership
+          </button>
+        }
+
+      </article>
+    }
+  </div>
+
+  @if (auth.currentUser()) {
+    <section class="history">
+      <h2>My Membership History</h2>
+
+      @if (userSubscriptions().length === 0) {
+        <p>No memberships requested yet.</p>
+      } @else {
+        @for (subscription of userSubscriptions(); track subscription.id) {
+          <article class="history-item">
+
+            <strong>
+              {{ memberships.getPlan(subscription.planId)?.name }}
+            </strong>
+
+            <span class="status">
+              {{ subscription.status }}
+            </span>
+
+            <p>
+              Requested:
+              {{ subscription.createdAt | date:'mediumDate' }}
+            </p>
+
+            @if (subscription.startDate) {
+              <p>
+                Started:
+                {{ subscription.startDate | date:'mediumDate' }}
+              </p>
+            }
+
+            @if (subscription.endDate) {
+              <p>
+                Expires:
+                {{ subscription.endDate | date:'mediumDate' }}
+              </p>
+            }
+
+          </article>
+        }
+      }
+    </section>
+  }
+
+</section>

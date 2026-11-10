@@ -5,7 +5,12 @@ import { authGuard, roleGuard } from './core/auth/auth.guard';
 export const routes: Routes = [
   { path: '', component: ComingSoon },
   { path: 'shop', component: ComingSoon },
-  { path: 'memberships', component: ComingSoon },
+  {
+  path: 'memberships',
+  loadComponent: () =>
+    import('./features/memberships/pages/memberships-page/memberships-page')
+      .then(m => m.MembershipsPage)
+},
   { path: 'student-fees', component: ComingSoon,
     canActivate: [authGuard] 
 
