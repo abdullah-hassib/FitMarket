@@ -5,7 +5,7 @@ import { RouterLink } from '@angular/router';
 
 import { Auth } from '../../../../core/auth/auth';
 import { MembershipService } from '../../services/membership.service';
-
+import { StudentFeesService } from '../../../student-fees/services/student-fees.service';
 @Component({
   selector: 'app-memberships-page',
   imports: [RouterLink, DatePipe],
@@ -15,7 +15,7 @@ import { MembershipService } from '../../services/membership.service';
 export class MembershipsPage {
   readonly auth = inject(Auth);
   readonly memberships = inject(MembershipService);
-
+private readonly fees = inject(StudentFeesService);
   readonly message = signal('');
 
   readonly userSubscriptions = computed(() => {
@@ -50,11 +50,15 @@ export class MembershipsPage {
     );
 
     if (result) {
-      this.message.set(
-        'Subscription requested! Complete payment in Student Fees when available.'
-      );
-    } else {
-      this.message.set('Unable to request membership.');
-    }
+  const invoice = this.fees.createInvoiceForSubscription(result.id);
+
+  this.message.set(
+    invoice
+      ? 'Membership requested! Your invoice is ready in Student Fees.'
+      : 'Membership requested. Open Student Fees to generate your invoice.'
+  );
+} else {
+  this.message.set('Unable to request membership.');
+}
   }
 }

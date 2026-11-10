@@ -11,10 +11,15 @@ export const routes: Routes = [
     import('./features/memberships/pages/memberships-page/memberships-page')
       .then(m => m.MembershipsPage)
 },
-  { path: 'student-fees', component: ComingSoon,
-    canActivate: [authGuard] 
+ 
+{
+  path: 'student-fees',
+  loadComponent: () =>
+    import('./features/student-fees/pages/student-fees-page/student-fees-page')
+      .then(m => m.StudentFeesPage),
+  canActivate: [authGuard]
+},
 
-  },
  {
   path: 'payroll',
   loadComponent: () =>
