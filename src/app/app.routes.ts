@@ -10,7 +10,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/home/pages/home-page').then(m => m.HomePage)
   },
-  { path: 'shop', component: ComingSoon },
+  {
+    path: 'shop',
+    loadComponent: () =>
+      import('./features/shop/pages/shop/shop').then(m => m.Shop)
+  },
   {
   path: 'memberships',
   loadComponent: () =>
