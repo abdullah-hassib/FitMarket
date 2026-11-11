@@ -1,9 +1,15 @@
 import { Routes } from '@angular/router';
 import { ComingSoon } from './shared/components/coming-soon/coming-soon';
 import { authGuard, roleGuard } from './core/auth/auth.guard';
+import { budgetsGuard } from './features/budgets/services/budget-access';
 
 export const routes: Routes = [
-  { path: '', component: ComingSoon },
+  {
+    path: '',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./features/home/pages/home-page').then(m => m.HomePage)
+  },
   { path: 'shop', component: ComingSoon },
   {
   path: 'memberships',
@@ -29,8 +35,9 @@ export const routes: Routes = [
 },
   {
   path: 'budgets',
-  component: ComingSoon,
-  canActivate: [roleGuard(['admin', 'accountant'])]
+  loadComponent: () =>
+    import('./features/budgets/pages/budgets-page').then(m => m.BudgetsPage),
+  canActivate: [budgetsGuard]
 },
 {
   path: 'login',
