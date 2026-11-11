@@ -22,6 +22,7 @@ describe('App', () => {
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('app-navbar')).not.toBeNull();
-    expect(compiled.querySelector('nav')?.textContent).toContain('FitMarket');
+    expect(compiled.querySelector('a.brand')?.textContent?.trim()).toBe('FitMarket');
+    expect(compiled.querySelector('nav')?.textContent).toContain('Shop');
   });
 });
