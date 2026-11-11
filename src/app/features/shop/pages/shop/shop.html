@@ -1,0 +1,7 @@
+<h1>FitMarket Sports Shop</h1>
+
+<div class="products">
+  @for (product of products; track product.id) {
+    <app-product-card [product]="product" />
+  }
+</div>
