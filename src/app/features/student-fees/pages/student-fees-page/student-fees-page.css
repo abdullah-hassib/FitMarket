@@ -1,0 +1,112 @@
+
+.fees-page {
+  max-width: 1150px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.page-header {
+  margin-bottom: 32px;
+}
+
+.page-header h1 {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.section {
+  margin-top: 36px;
+}
+
+.section h2 {
+  margin-bottom: 16px;
+}
+
+.feedback {
+  background: #e8f5e9;
+  padding: 14px;
+  border-radius: 8px;
+}
+
+.staff-notice {
+  color: #555;
+  padding: 12px;
+  background: #f3f4f6;
+  border-radius: 8px;
+}
+
+.pending-list {
+  display: grid;
+  gap: 14px;
+}
+
+.pending-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+th, td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background: #f4f5f7;
+}
+
+td small {
+  display: block;
+  color: #666;
+  margin-top: 5px;
+}
+
+button {
+  background: #198754;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #146c43;
+}
+
+.status {
+  text-transform: capitalize;
+  font-weight: 600;
+  color: #a16207;
+}
+
+.status.paid {
+  color: #198754;
+}
+
+@media (max-width: 600px) {
+  .fees-page {
+    padding: 24px 16px;
+  }
+
+  .pending-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

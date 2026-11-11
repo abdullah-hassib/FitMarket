@@ -1,0 +1,96 @@
+
+.memberships-page {
+  max-width: 1150px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.page-heading {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.page-heading h1 {
+  font-size: 2.4rem;
+  margin-bottom: 10px;
+}
+
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.plan-card {
+  display: flex;
+  flex-direction: column;
+  padding: 28px;
+  border: 1px solid #ddd;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.price {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #198754;
+}
+
+.duration {
+  color: #666;
+}
+
+.plan-card ul {
+  padding-left: 20px;
+  line-height: 2;
+}
+
+.subscribe-btn {
+  display: block;
+  margin-top: auto;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #198754;
+  color: white;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+}
+
+.subscribe-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.feedback {
+  padding: 14px;
+  margin-bottom: 24px;
+  background: #e8f5e9;
+  border-radius: 8px;
+}
+
+.history {
+  margin-top: 48px;
+}
+
+.history-item {
+  padding: 18px;
+  margin-top: 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.status {
+  margin-left: 12px;
+  text-transform: capitalize;
+  font-weight: 600;
+  color: #198754;
+}
+
+@media (max-width: 768px) {
+  .plans-grid {
+    grid-template-columns: 1fr;
+  }
+}

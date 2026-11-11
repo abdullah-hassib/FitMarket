@@ -1,0 +1,40 @@
+
+<section class="profile-container">
+  <h1>My FitMarket Profile</h1>
+
+  @if (auth.currentUser(); as user) {
+    <article class="profile-card">
+
+      @if (user.profilePicture) {
+        <img
+          class="profile-picture"
+          [src]="user.profilePicture"
+          [alt]="user.name + ' profile picture'"
+        />
+      }
+
+      <h2>{{ user.name }}</h2>
+
+      <p><strong>Username:</strong> {{ user.username }}</p>
+      <p><strong>Email:</strong> {{ user.email }}</p>
+      <p><strong>Account role:</strong> {{ user.role }}</p>
+
+      <p>
+        <strong>Fitness preferences:</strong>
+        {{ user.preferences?.join(', ') || 'Not provided' }}
+      </p>
+
+      <p>
+        <strong>Demo payment method:</strong>
+        {{ user.demoCard || 'Not provided' }}
+      </p>
+
+      <button type="button" (click)="auth.logout()">
+        Logout
+      </button>
+    </article>
+  } @else {
+    <p>You must log in to view your profile.</p>
+    <a routerLink="/login">Go to Login</a>
+  }
+</section>

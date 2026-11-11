@@ -1,0 +1,162 @@
+
+<section class="fees-page">
+
+  <header class="page-header">
+    <h1>Student Fees & Invoices</h1>
+    <p>Manage membership invoices and simulated payments.</p>
+  </header>
+
+  @if (message()) {
+    <p class="feedback" role="status">
+      {{ message() }}
+    </p>
+  }
+
+  @if (isStaff()) {
+    <p class="staff-notice">
+      Staff view: showing invoices for all trainees.
+    </p>
+  }
+
+  <!-- Pending memberships without invoices -->
+  @if (pendingWithoutInvoice().length > 0) {
+    <section class="section">
+      <h2>Memberships Awaiting Invoices</h2>
+
+      <div class="pending-list">
+        @for (sub of pendingWithoutInvoice(); track sub.id) {
+          <article class="pending-card">
+            <div>
+              <strong>
+                {{ memberships.getPlan(sub.planId)?.name }}
+              </strong>
+
+              <p>
+                Requested:
+                {{ sub.createdAt | date:'mediumDate' }}
+              </p>
+
+              @if (isStaff()) {
+                <p>Trainee ID: {{ sub.userId }}</p>
+              }
+            </div>
+
+            <button
+              type="button"
+              (click)="createInvoice(sub.id)">
+              Generate Invoice
+            </button>
+          </article>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Invoice table -->
+  <section class="section">
+    <h2>Invoices</h2>
+
+    @if (visibleInvoices().length === 0) {
+      <p>No invoices available.</p>
+    } @else {
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Invoice</th>
+              <th>Amount</th>
+              <th>Issued</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (invoice of visibleInvoices(); track invoice.id) {
+              <tr>
+                <td>
+                  {{ invoice.description }}
+
+                  @if (isStaff()) {
+                    <small>
+                      Trainee #{{ invoice.userId }}
+                    </small>
+                  }
+                </td>
+
+                <td>
+                  {{ invoice.amountEGP | currency:'EGP':'code':'1.0-0' }}
+                </td>
+
+                <td>
+                  {{ invoice.issuedAt | date:'mediumDate' }}
+                </td>
+
+                <td>
+                  <span
+                    class="status"
+                    [class.paid]="invoice.status === 'paid'">
+                    {{ invoice.status }}
+                  </span>
+                </td>
+
+                <td>
+                  @if (invoice.status === 'unpaid') {
+                    <button
+                      type="button"
+                      (click)="payInvoice(invoice.id)">
+                      Pay (Demo)
+                    </button>
+                  } @else {
+                    <span>Completed</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+  <!-- Payment history -->
+  <section class="section">
+    <h2>Payment History</h2>
+
+    @if (visiblePayments().length === 0) {
+      <p>No payments recorded yet.</p>
+    } @else {
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Invoice ID</th>
+              <th>Amount</th>
+              <th>Date</th>
+              <th>Method</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (payment of visiblePayments(); track payment.id) {
+              <tr>
+                <td>{{ payment.invoiceId.slice(0, 8) }}</td>
+
+                <td>
+                  {{ payment.amountEGP | currency:'EGP':'code':'1.0-0' }}
+                </td>
+
+                <td>
+                  {{ payment.paidAt | date:'mediumDate' }}
+                </td>
+
+                <td>Demo Payment</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+</section>

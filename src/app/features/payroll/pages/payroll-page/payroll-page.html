@@ -10,11 +10,7 @@
 
   <section class="controls" aria-label="Payroll controls">
     <label>Payroll month <input type="month" [ngModel]="selectedMonth()" (ngModelChange)="selectedMonth.set($event)" /></label>
-    <label>Demo role
-      <select [ngModel]="demoRole()" (ngModelChange)="demoRole.set($event)">
-        <option value="admin">Admin</option><option value="accountant">Accountant</option><option value="trainee">Trainee (view only)</option>
-      </select>
-    </label>
+    
     <label>Demo commission rate (%)
       <input type="number" min="0" max="100" step="0.5" [ngModel]="commissionRatePercent()" (ngModelChange)="commissionRatePercent.set($event)" [disabled]="!canEdit()" />
     </label>
