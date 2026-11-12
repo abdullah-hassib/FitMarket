@@ -1,0 +1,117 @@
+
+<section class="admin-products">
+  <h1>Admin Product Management</h1>
+
+  <p>Manage FitMarket products, prices, stock and discounts.</p>
+
+  <div class="stock-alert">
+    <h2>Low Stock Alerts</h2>
+
+    @if (productService.lowStockProducts().length === 0) {
+      <p>All products have sufficient stock.</p>
+    } @else {
+      @for (product of productService.lowStockProducts(); track product.id) {
+        <p>
+          {{ product.name }} — {{ product.stock }} remaining
+        </p>
+      }
+    }
+  </div>
+
+  <div class="product-form">
+    <h2>
+      {{ editingId() !== null ? 'Edit Product' : 'Add Product' }}
+    </h2>
+
+    <form (ngSubmit)="saveProduct()">
+      <label for="name">Product Name</label>
+      <input id="name" name="name"
+        [(ngModel)]="formProduct.name" required />
+
+      <label for="category">Category</label>
+      <select id="category" name="category"
+        [(ngModel)]="formProduct.category">
+        <option value="Equipment">Equipment</option>
+        <option value="Sportswear">Sportswear</option>
+        <option value="Supplements">Supplements</option>
+        <option value="Training Plans">Training Plans</option>
+      </select>
+
+      <label for="price">Price (EGP)</label>
+      <input id="price" name="price" type="number"
+        min="0" [(ngModel)]="formProduct.price" required />
+
+      <label for="stock">Stock Quantity</label>
+      <input id="stock" name="stock" type="number"
+        min="0" step="1" [(ngModel)]="formProduct.stock" required />
+
+      <label for="discount">Discount (%)</label>
+      <input id="discount" name="discount" type="number"
+        min="0" max="100"
+        [(ngModel)]="formProduct.discountPercent" />
+
+      <label for="description">Description</label>
+      <textarea id="description" name="description"
+        [(ngModel)]="formProduct.description"></textarea>
+
+      <label for="imageUrl">Image URL</label>
+      <input id="imageUrl" name="imageUrl"
+        [(ngModel)]="formProduct.imageUrl" />
+
+      <div class="form-actions">
+        <button type="submit">
+          {{ editingId() !== null ? 'Save Changes' : 'Add Product' }}
+        </button>
+
+        <button type="button" (click)="resetForm()">
+          Cancel / Clear
+        </button>
+      </div>
+    </form>
+
+    <p role="status">{{ message() }}</p>
+  </div>
+
+  <h2>Product Inventory</h2>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Discount</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (product of productService.products(); track product.id) {
+          <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.category }}</td>
+            <td>{{ product.price }} EGP</td>
+            <td>
+              {{ product.stock }}
+              @if (product.stock <= 5) {
+                <strong>Low stock</strong>
+              }
+            </td>
+            <td>{{ product.discountPercent ?? 0 }}%</td>
+            <td>
+              <button type="button" (click)="editProduct(product)">
+                Edit
+              </button>
+
+              <button type="button" (click)="deleteProduct(product.id)">
+                Delete
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

@@ -1,14 +1,56 @@
 
-<div class="product-card">
-  <h2>{{ product().name }}</h2>
+<a class="product-card" [routerLink]="['/shop', product().id]">
 
-  <p>Category: {{ product().category }}</p>
+  <div class="product-image">
+    @if (product().imageUrl) {
+      <img
+        [src]="product().imageUrl"
+        [alt]="product().name"
+        loading="lazy"
+      />
+    } @else {
+      <div class="image-placeholder">
+        🏋️
+      </div>
+    }
 
-  <p>Price: {{ product().price }} EGP</p>
+    @if ((product().discountPercent ?? 0) > 0) {
+      <span class="discount-badge">
+        -{{ product().discountPercent }}%
+      </span>
+    }
+  </div>
 
-  @if (product().stock > 0) {
-    <p>In Stock: {{ product().stock }}</p>
-  } @else {
-    <p>Out of Stock</p>
-  }
-</div>
+  <div class="product-info">
+    <span class="category">{{ product().category }}</span>
+
+    <h2>{{ product().name }}</h2>
+
+    @if (product().description) {
+      <p class="description">{{ product().description }}</p>
+    }
+
+    <div class="price-row">
+      @if ((product().discountPercent ?? 0) > 0) {
+        <span class="old-price">
+          {{ product().price }} EGP
+        </span>
+      }
+
+      <strong class="current-price">
+        {{ getDiscountedPrice() }} EGP
+      </strong>
+    </div>
+
+    @if (product().stock > 0) {
+      <span class="stock in-stock">
+        In Stock: {{ product().stock }}
+      </span>
+    } @else {
+      <span class="stock out-of-stock">
+        Out of Stock
+      </span>
+    }
+  </div>
+
+</a>
