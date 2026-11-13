@@ -4,6 +4,7 @@ import { loadStoredArray, saveStoredArray } from '../utils/storage';
 import { SaleRecord, SaleItem } from '../../../models/sale.model';
 import { ProductService } from './product';
 import { Cart } from './cart';
+import { Auth } from '../../../core/auth/auth';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,7 @@ export class Sales {
 
   private readonly productService = inject(ProductService);
   private readonly cart = inject(Cart);
+  private readonly auth = inject(Auth);
 
   private readonly _sales = signal<SaleRecord[]>([]);
 
@@ -55,7 +57,8 @@ private isStoredSale(value: unknown): value is SaleRecord {
       item['quantity'] > 0 &&
       typeof item['unitPrice'] === 'number' &&
       Number.isFinite(item['unitPrice']) &&
-      item['unitPrice'] >= 0
+      item['unitPrice'] >= 0 &&
+      (item['productName'] === undefined || typeof item['productName'] === 'string')
     );
   });
 
@@ -79,7 +82,9 @@ private isStoredSale(value: unknown): value is SaleRecord {
     (sale['staffId'] === undefined ||
       (typeof sale['staffId'] === 'number' &&
         Number.isInteger(sale['staffId']) &&
-        sale['staffId'] > 0))
+        sale['staffId'] > 0)) &&
+    (sale['customerId'] === undefined ||
+      (typeof sale['customerId'] === 'number' && Number.isSafeInteger(sale['customerId']) && sale['customerId'] > 0))
   );
 }
 
@@ -100,6 +105,8 @@ constructor() {
 
 
   completeSale(): SaleRecord | null {
+    const customer = this.auth.currentUser();
+    if (!customer) return null;
 
     const cartItems = this.cart.items();
 
@@ -128,7 +135,8 @@ constructor() {
       saleItems.push({
         productId: product.id,
         quantity: item.quantity,
-        unitPrice: product.price
+        unitPrice: product.price,
+        productName: product.name
       });
     }
 
@@ -163,7 +171,8 @@ constructor() {
       items: saleItems,
       subtotal,
       discountAmount,
-      total
+      total,
+      customerId: customer.id
     };
 
     // Save the completed sale
@@ -175,8 +184,18 @@ constructor() {
     return sale;
   }
 
+  /** Restrict receipts to the purchaser's demo account. */
   getSaleById(id: number): SaleRecord | undefined {
-    return this.sales().find(sale => sale.id === id);
+    const userId = this.auth.currentUser()?.id;
+    return userId ? this.sales().find(sale => sale.id === id && sale.customerId === userId) : undefined;
+  }
+
+  getMyOrders(): SaleRecord[] {
+    const userId = this.auth.currentUser()?.id;
+    return userId ? this.sales()
+      .filter(sale => sale.customerId === userId)
+      .slice()
+      .sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id) : [];
   }
   
 }

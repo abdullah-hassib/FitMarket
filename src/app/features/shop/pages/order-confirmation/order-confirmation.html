@@ -12,7 +12,7 @@
 
     @for (item of order.items; track item.productId) {
       <div class="order-item">
-        <p>Product ID: {{ item.productId }}</p>
+        <p>{{ item.productName || ('Product #' + item.productId) }}</p>
         <p>Quantity: {{ item.quantity }}</p>
         <p>Unit Price: {{ item.unitPrice }} EGP</p>
         <p>Line Total: {{ item.quantity * item.unitPrice }} EGP</p>
@@ -22,6 +22,7 @@
     <h3>Subtotal: {{ order.subtotal }} EGP</h3>
     <p>Discount: {{ order.discountAmount }} EGP</p>
     <h2>Total: {{ order.total }} EGP</h2>
+    <a routerLink="/shop/orders" class="order-history-link">View my order history</a>
   </section>
 } @else {
   <h2>Order not found</h2>

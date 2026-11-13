@@ -1,0 +1,40 @@
+<section class="orders-page">
+  <header class="orders-hero">
+    <div>
+      <span class="orders-eyebrow">FITMARKET / YOUR ACCOUNT</span>
+      <h1>My Orders</h1>
+      <p>Your purchases, saved in one place. Only orders made by your current account appear here.</p>
+    </div>
+    <a routerLink="/shop" class="orders-back">Explore the shop →</a>
+  </header>
+
+  <div class="orders-summary">
+    <div><span>Orders placed</span><strong>{{ orders().length }}</strong></div>
+    <div><span>Total spent</span><strong>{{ totalSpent() | currency:'EGP':'code' }}</strong></div>
+  </div>
+
+  @for (order of orders(); track order.id) {
+    <article class="order-card">
+      <div class="order-top">
+        <div><span class="order-number">ORDER #{{ order.id }}</span><h2>{{ order.date | date:'mediumDate' }}</h2></div>
+        <span class="order-status">Completed · Demo</span>
+      </div>
+      <div class="order-products">
+        @for (item of order.items; track item.productId) {
+          <p><span>{{ item.productName || ('Product #' + item.productId) }} × {{ item.quantity }}</span><strong>{{ item.unitPrice * item.quantity | currency:'EGP':'code' }}</strong></p>
+        }
+      </div>
+      <div class="order-footer">
+        <strong>{{ order.total | currency:'EGP':'code' }}</strong>
+        <a [routerLink]="['/shop/order', order.id]">View receipt →</a>
+      </div>
+    </article>
+  } @empty {
+    <div class="orders-empty">
+      <h2>No orders yet</h2>
+      <p>Your completed purchases will show up here after checkout.</p>
+      <a routerLink="/shop">Browse products →</a>
+    </div>
+  }
+  <p class="orders-note">Demo orders are stored in this browser. Older orders without an account ID cannot be assigned automatically.</p>
+</section>

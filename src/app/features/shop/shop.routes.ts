@@ -1,5 +1,6 @@
 
 import { Routes } from '@angular/router';
+import { authGuard } from '../../core/auth/auth.guard';
 
 export const SHOP_ROUTES: Routes = [
   {
@@ -14,11 +15,19 @@ export const SHOP_ROUTES: Routes = [
   },
   {
     path: 'checkout',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/checkout/checkout').then(m => m.Checkout)
   },
   {
+    path: 'orders',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/order-history/order-history').then(m => m.OrderHistory)
+  },
+  {
     path: 'order/:id',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/order-confirmation/order-confirmation')
         .then(m => m.OrderConfirmation)

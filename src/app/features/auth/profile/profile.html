@@ -29,6 +29,7 @@
         {{ user.demoCard || 'Not provided' }}
       </p>
 
+      <a routerLink="/shop/orders" class="profile-orders-link">View My Orders</a>
       <button type="button" (click)="auth.logout()">
         Logout
       </button>
