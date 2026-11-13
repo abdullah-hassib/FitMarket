@@ -10,6 +10,14 @@ describe('membership seven-day cancellation', () => {
     memberships = TestBed.inject(MembershipService);
   });
 
+  it('lets a trainee withdraw an unpaid request', () => {
+    const pending = memberships.requestSubscription(42, 'basic')!;
+    expect(memberships.canCancelSubscription(42, pending)).toBe(true);
+    expect(memberships.cancelSubscription(42, pending.id)).toBe(true);
+    expect(memberships.subscriptions()[0].status).toBe('cancelled');
+    expect(memberships.requestSubscription(42, 'standard')).not.toBeNull();
+  });
+
   it('allows the owning trainee to cancel a recently activated membership', () => {
     const sub = memberships.requestSubscription(42, 'basic');
     expect(sub).not.toBeNull();
