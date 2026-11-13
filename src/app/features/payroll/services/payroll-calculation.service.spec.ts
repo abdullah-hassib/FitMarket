@@ -33,7 +33,7 @@ describe('payroll calculations', () => {
   it('creates parseable report JSON with totals', () => {
     const report = createMonthlyReport([employee], '2026-11', [adjustment], sales, policy);
     const parsed = JSON.parse(JSON.stringify(report));
-    expect(parsed.employees).toHaveLength(1);
+    expect(parsed.employees.length).toBe(1);
     expect(parsed.totals.netSalary).toBe(8395);
   });
 });
