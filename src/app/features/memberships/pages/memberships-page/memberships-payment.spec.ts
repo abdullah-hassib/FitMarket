@@ -41,8 +41,8 @@ describe('membership test-card checkout', () => {
     page.selectTestCard('4000 0000 0000 0002');
     page.cvv = '123';
     await page.confirmSubscription();
-    expect(memberships.subscriptions()).toHaveLength(0);
-    expect(fees.invoices()).toHaveLength(0);
+    expect(memberships.subscriptions().length).toBe(0);
+    expect(fees.invoices().length).toBe(0);
     expect(page.paymentError()).toContain('declined');
     expect(page.cvv).toBe('');
   });
@@ -54,11 +54,11 @@ describe('membership test-card checkout', () => {
     const second = page.confirmSubscription();
     expect(page.processing()).toBe(true);
     await Promise.all([first, second]);
-    expect(memberships.subscriptions()).toHaveLength(1);
+    expect(memberships.subscriptions().length).toBe(1);
     expect(memberships.subscriptions()[0].status).toBe('active');
-    expect(fees.invoices()).toHaveLength(1);
+    expect(fees.invoices().length).toBe(1);
     expect(fees.invoices()[0].status).toBe('paid');
-    expect(fees.payments()).toHaveLength(1);
+    expect(fees.payments().length).toBe(1);
     expect(fees.payments()[0].method).toBe('test-visa');
     expect(fees.payments()[0].last4).toBe('4242');
     expect(JSON.stringify(fees.payments())).not.toContain('cvv');
