@@ -40,3 +40,10 @@ button {
 .profile-orders-link { display:inline-flex;padding:12px 19px;margin:10px 16px 10px 0;border-radius:10px;border:1px solid var(--accent);color:var(--accent-light);text-decoration:none;font-weight:800; }
 .profile-orders-link:hover { background:var(--accent-soft); }
 @media(max-width:600px) { .profile-card{padding:22px;} }
+
+.profile-photo-picker { display:grid;gap:9px;margin:18px 0 26px;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--surface-alt); }
+.profile-photo-picker label { font-weight:800;color:var(--text); }
+.profile-photo-picker input { max-width:100%;color:var(--text-muted); }
+.profile-photo-picker small { color:var(--text-muted);line-height:1.5; }
+.profile-photo-picker .photo-success { color:var(--success); }
+.profile-photo-picker .photo-error { color:var(--accent-light); }
