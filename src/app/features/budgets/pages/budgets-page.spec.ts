@@ -15,7 +15,7 @@ describe('BudgetsPage', () => {
         provideRouter([]),
         { provide: BUDGET_ROLE, useValue: () => 'accountant' },
         { provide: Sales, useValue: { sales: signal([]).asReadonly() } },
-        { provide: StudentFeesService, useValue: { payments: signal([]).asReadonly() } }
+        { provide: StudentFeesService, useValue: { payments: signal([]).asReadonly(), refunds: signal([]).asReadonly() } }
       ]
     });
   });
