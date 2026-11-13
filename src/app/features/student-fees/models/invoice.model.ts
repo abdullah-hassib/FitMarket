@@ -18,5 +18,6 @@ export interface PaymentRecord {
   userId: number;
   amountEGP: number;
   paidAt: string;
-  method: 'demo';
+  method: 'demo' | 'test-visa' | 'test-mastercard';
+  last4?: string;
 }
