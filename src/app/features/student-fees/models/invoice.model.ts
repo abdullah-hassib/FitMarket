@@ -1,5 +1,5 @@
 
-export type InvoiceStatus = 'unpaid' | 'paid';
+export type InvoiceStatus = 'unpaid' | 'paid' | 'void';
 
 export interface Invoice {
   id: string;
