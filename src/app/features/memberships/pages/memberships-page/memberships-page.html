@@ -38,6 +38,14 @@
             }
             @if (subscription.cancelledAt) {
               <p>Cancelled: {{ subscription.cancelledAt | date:'mediumDate' }}</p>
+              @if (subscription.startDate) {
+                @if (feesRefundForSubscription(subscription.id); as refund) {
+                  <p class="membership-note">Full demo refund issued: {{ refund.amountEGP }} EGP on {{ refund.refundedAt | date:'mediumDate' }}</p>
+                } @else if (canRetryRefund(subscription.id)) {
+                  <p class="membership-note">Your refund has not been recorded yet.</p>
+                  <button type="button" class="cancel-btn" (click)="retryRefund(subscription.id)">Retry demo refund</button>
+                }
+              }
             }
             @if (subscription.status === 'pending') {
               <p class="membership-note">This request is not yet active. <a routerLink="/student-fees">Pay your invoice in Student Fees</a> or withdraw the request below.</p>
@@ -47,7 +55,7 @@
                 {{ subscription.status === 'pending' ? 'Cancel pending request' : 'Cancel active membership (within 7 days)' }}
               </button>
               @if (subscription.status === 'active') {
-                <p class="fine-print">Cancelling ends membership access immediately. Paid demo invoices remain recorded; no refund.</p>
+                <p class="fine-print">Cancelling within seven days ends membership access and records a full demo refund.</p>
               }
             } @else if (subscription.status === 'active') {
               <p class="membership-note">The seven-day cancellation window has ended.</p>
@@ -159,7 +167,7 @@
           <span>Total due</span>
           <strong>{{ plan.priceEGP }} EGP</strong>
         </div>
-        <p class="summary-disclaimer">Demo payment only. You may cancel within seven days after activation; cancellation does not refund the simulated payment.</p>
+        <p class="summary-disclaimer">Demo payment only. Cancel within seven days after activation for a full simulated refund.</p>
         <button type="button" class="close-payment" (click)="selectedPlanId.set(null)" [disabled]="processing()">Back to plans</button>
       </aside>
     </section>
