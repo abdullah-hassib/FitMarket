@@ -14,7 +14,7 @@ import { Sound } from '../../../../shared/services/sound';
   selector: 'app-memberships-page',
   imports: [RouterLink, DatePipe, FormsModule],
   templateUrl: './memberships-page.html',
-  styleUrls: ['./memberships-page.css', '../../../shop/pages/checkout/checkout.css', './membership-checkout.css']
+  styleUrls: ['./memberships-page.css', '../../../shop/pages/checkout/checkout.css', './membership-checkout.css', '../../../shop/pages/order-confirmation/order-confirmation.css']
 })
 export class MembershipsPage {
   readonly auth = inject(Auth);
@@ -25,6 +25,7 @@ export class MembershipsPage {
   private readonly sound = inject(Sound);
 
   readonly message = signal('');
+  readonly paymentSuccess = signal(false);
   readonly paymentError = signal('');
   readonly processing = signal(false);
   readonly selectedPlanId = signal<string | null>(null);
@@ -54,6 +55,7 @@ export class MembershipsPage {
       this.message.set('You cannot subscribe right now.');
       return;
     }
+    this.paymentSuccess.set(false);
     this.selectedPlanId.set(planId);
     this.cardholder = this.auth.currentUser()?.name ?? '';
     this.cvv = '';
@@ -108,6 +110,7 @@ export class MembershipsPage {
       }
 
       this.selectedPlanId.set(null);
+      this.paymentSuccess.set(true);
       this.message.set('Demo payment approved! Your membership is now active.');
       this.feedback.show('success', this.message());
       this.sound.playSuccess();
@@ -117,6 +120,7 @@ export class MembershipsPage {
   }
 
   cancelSubscription(subscriptionId: string): void {
+    this.paymentSuccess.set(false);
     const user = this.auth.currentUser();
     if (!user) return;
     const success = this.memberships.cancelSubscription(user.id, subscriptionId);
