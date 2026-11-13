@@ -108,6 +108,20 @@ export class StudentFeesService {
     return saved ? invoice : null;
   }
 
+  /** Keep cancelled unpaid membership requests out of checkout, without deleting their audit trail. */
+  voidUnpaidInvoiceForSubscription(subscriptionId: string): boolean {
+    const user = this.auth.currentUser();
+    const sub = this.memberships.subscriptions().find(item => item.id === subscriptionId);
+    if (!user || !sub || sub.userId !== user.id || sub.status !== 'cancelled') return false;
+
+    const updated = this.invoices().map(invoice =>
+      invoice.subscriptionId === subscriptionId && invoice.status === 'unpaid'
+        ? { ...invoice, status: 'void' as const }
+        : invoice
+    );
+    return this.save({ ...this.state(), invoices: updated });
+  }
+
   // Simulate paying an invoice.
   payInvoice(invoiceId: string, receipt?: DemoPaymentReceipt): boolean {
     const user = this.auth.currentUser();
