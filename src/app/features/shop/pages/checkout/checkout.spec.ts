@@ -12,7 +12,7 @@ describe('demo checkout', () => {
   let cart: Cart;
   let sales: Sales;
   const user = signal({ id: 42, name: 'Demo Customer', demoCard: 'test-visa' });
-  const visited: string[][] = [];
+  const visited: (string | number)[][] = [];
 
   beforeEach(async () => {
     visited.length = 0;
@@ -24,7 +24,7 @@ describe('demo checkout', () => {
       imports: [Checkout],
       providers: [
         { provide: Auth, useValue: { currentUser: user.asReadonly() } },
-        { provide: Router, useValue: { navigate: async (parts: string[]) => { visited.push(parts); return true; } } }
+        { provide: Router, useValue: { navigate: async (parts: (string | number)[]) => { visited.push(parts); return true; } } }
       ]
     }).compileComponents();
     fixture = TestBed.createComponent(Checkout);
@@ -75,9 +75,10 @@ describe('demo checkout', () => {
     expect(component.processing()).toBe(false);
     expect(sales.sales().length).toBe(1);
     expect(sales.sales()[0].payment).toEqual({ method: 'test-visa', last4: '4242', status: 'demo-paid' });
-    expect(JSON.stringify(sales.sales())).not.toContain('123');
+    expect(JSON.stringify(sales.sales())).not.toContain('"cvv"');
+    expect(JSON.stringify(sales.sales())).not.toContain('"cardNumber"');
     expect(cart.items()).toEqual([]);
     expect(visited.length).toBe(1);
-    expect(visited[0]).toEqual(['/shop/order', 1] as unknown as string[]);
+    expect(visited[0]).toEqual(['/shop/order', 1]);
   });
 });
