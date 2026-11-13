@@ -119,30 +119,57 @@ export class MembershipsPage {
     }
   }
 
+  retryRefund(subscriptionId: string): void {
+    const refund = this.fees.refundCancelledSubscription(subscriptionId);
+    this.message.set(refund
+      ? `Full demo refund of ${refund.amountEGP} EGP recorded successfully.`
+      : 'Unable to record the demo refund. Check your browser storage and try again.');
+    this.feedback.show(refund ? 'success' : 'error', this.message());
+    this.sound.unlock();
+    if (refund) this.sound.playSuccess();
+    else this.sound.playError();
+  }
+
   cancelSubscription(subscriptionId: string): void {
     const user = this.auth.currentUser();
     const subscription = this.userSubscriptions().find(item => item.id === subscriptionId);
     if (!user || !subscription) return;
+    // Avoid promising a refund for records that have no matching demo payment.
+    if (subscription.status === 'active' && !this.fees.hasPaidPaymentForSubscription(subscriptionId)) {
+      this.message.set('Cannot cancel this paid membership: its demo payment record is missing. Please review Student Fees.');
+      this.feedback.show('error', this.message());
+      return;
+    }
+
     if (!window.confirm(
       subscription.status === 'pending'
         ? 'Withdraw this unpaid membership request?'
-        : 'Cancel this active membership? Access ends immediately, and no demo refund will be issued.'
+        : 'Cancel this membership? A full demo refund will be recorded and your access will end immediately.'
     )) return;
 
     const success = this.memberships.cancelSubscription(user.id, subscriptionId);
     if (success && subscription.status === 'pending') {
       this.fees.voidUnpaidInvoiceForSubscription(subscriptionId);
     }
+
+    const refund = success && subscription.status === 'active'
+      ? this.fees.refundCancelledSubscription(subscriptionId)
+      : null;
+
     this.paymentSuccess.set(false);
-    this.message.set(success
-      ? subscription.status === 'pending'
-        ? 'Pending membership request cancelled.'
-        : 'Membership cancelled. This demo cancellation does not issue a refund.'
-      : 'Unable to cancel: only your own pending request or an active membership within seven days is eligible.'
+    this.message.set(!success
+      ? 'Unable to cancel: only your own pending request or an active membership within seven days is eligible.'
+      : subscription.status === 'pending'
+        ? 'Pending membership request cancelled. No payment or refund was needed.'
+        : refund
+          ? `Membership cancelled. Full demo refund of ${refund.amountEGP} EGP issued and recorded in Student Fees.`
+          : 'Membership cancelled, but the demo refund could not be recorded. Use Retry demo refund below.'
     );
-    this.feedback.show(success ? 'success' : 'error', this.message());
+
+    const resultOk = success && (subscription.status === 'pending' || !!refund);
+    this.feedback.show(resultOk ? 'success' : 'error', this.message());
     this.sound.unlock();
-    if (success) this.sound.playSuccess();
+    if (resultOk) this.sound.playSuccess();
     else this.sound.playError();
   }
 }
