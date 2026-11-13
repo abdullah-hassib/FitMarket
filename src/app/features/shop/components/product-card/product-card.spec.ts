@@ -2,6 +2,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProductCard } from './product-card';
 import { Product } from '../../../../models/product.model';
+import { provideRouter } from '@angular/router';
 
 describe('ProductCard', () => {
   let component: ProductCard;
@@ -16,9 +17,10 @@ describe('ProductCard', () => {
   };
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [ProductCard],
-    }).compileComponents();
+   await TestBed.configureTestingModule({
+  imports: [ProductCard],
+  providers: [provideRouter([])]
+}).compileComponents();
 
     fixture = TestBed.createComponent(ProductCard);
     component = fixture.componentInstance;

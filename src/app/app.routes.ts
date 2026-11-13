@@ -12,8 +12,8 @@ export const routes: Routes = [
   },
   {
     path: 'shop',
-    loadComponent: () =>
-      import('./features/shop/pages/shop/shop').then(m => m.Shop)
+    loadChildren: () =>
+      import('./features/shop/shop.routes').then(m => m.SHOP_ROUTES)
   },
   {
   path: 'memberships',
@@ -62,7 +62,13 @@ export const routes: Routes = [
       .then(m => m.Profile),
   canActivate: [authGuard]
 },
-  { path: 'admin/products', component: ComingSoon },
+  {
+    path: 'admin/products',
+    loadComponent: () =>
+      import('./features/shop/pages/admin-products/admin-products')
+        .then(m => m.AdminProducts),
+    canActivate: [roleGuard(['admin'])]
+  },
 {
   path: 'admin/users',
   loadComponent: () =>

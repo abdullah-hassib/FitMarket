@@ -1,0 +1,69 @@
+
+<section class="cart-page">
+  <h1>Your Shopping Cart</h1>
+
+  @if (cart.items().length === 0) {
+    <p>Your cart is empty.</p>
+  } @else {
+
+    <div class="cart-list">
+      @for (row of cartRows(); track row.product.id) {
+        <article class="cart-item">
+          <div>
+            <h2>{{ row.product.name }}</h2>
+            <p>{{ row.product.category }}</p>
+            <p>{{ row.product.price }} EGP each</p>
+            <p>Available: {{ row.product.stock }}</p>
+          </div>
+
+          <div class="cart-actions">
+            <button
+              type="button"
+              (click)="decrease(row.product.id, row.quantity)"
+              [disabled]="row.quantity <= 1"
+              [attr.aria-label]="'Decrease ' + row.product.name"
+            >−</button>
+
+            <span>{{ row.quantity }}</span>
+
+            <button
+              type="button"
+              (click)="increase(row.product.id, row.quantity)"
+              [disabled]="row.quantity >= row.product.stock"
+              [attr.aria-label]="'Increase ' + row.product.name"
+            >+</button>
+
+            <p>{{ row.lineTotal }} EGP</p>
+
+            <button
+              type="button"
+              (click)="remove(row.product.id)"
+            >
+              Remove
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+
+    
+<div class="cart-summary">
+  <h2>Order Summary</h2>
+
+  <p>Items: {{ cart.itemCount() }}</p>
+  <p>Subtotal: {{ cart.subtotal() }} EGP</p>
+  <p>Discount: -{{ cart.discountTotal() }} EGP</p>
+
+  <h3>Total: {{ cart.total() }} EGP</h3>
+
+  <a routerLink="/shop/checkout" class="checkout-btn">
+    Proceed to Checkout
+  </a>
+
+  <button type="button" (click)="cart.clearCart()">
+    Clear Cart
+  </button>
+</div>
+
+  }
+</section>
