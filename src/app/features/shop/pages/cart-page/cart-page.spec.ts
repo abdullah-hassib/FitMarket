@@ -7,6 +7,8 @@ describe('CartPage', () => {
   let fixture: ComponentFixture<CartPage>;
 
   beforeEach(async () => {
+    localStorage.removeItem('fitmarket.shop.cart.v1');
+    localStorage.removeItem('fitmarket.shop.products.v1');
     await TestBed.configureTestingModule({
       imports: [CartPage],
       providers: [provideRouter([])]
