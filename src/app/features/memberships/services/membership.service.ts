@@ -155,9 +155,11 @@ export class MembershipService {
 
   /** A cancellation is allowed for exactly seven days after demo activation. */
   canCancelSubscription(userId: number, subscription: MembershipSubscription, now = Date.now()): boolean {
-    if (subscription.userId !== userId || subscription.status !== 'active' || !subscription.startDate) {
-      return false;
-    }
+    if (subscription.userId !== userId) return false;
+
+    // Unpaid requests can be withdrawn without waiting for activation.
+    if (subscription.status === 'pending') return true;
+    if (subscription.status !== 'active' || !subscription.startDate) return false;
 
     const startedAt = Date.parse(subscription.startDate);
     return Number.isFinite(startedAt) &&
