@@ -32,7 +32,7 @@ export class MembershipsPage {
   readonly testCards = TEST_CARDS;
 
   cardholder = this.auth.currentUser()?.name ?? '';
-  cardNumber = this.auth.currentUser()?.demoCard === 'test-mastercard'
+  cardNumber: string = this.auth.currentUser()?.demoCard === 'test-mastercard'
     ? TEST_CARDS[1].number
     : TEST_CARDS[0].number;
   expiry = '12/30';
