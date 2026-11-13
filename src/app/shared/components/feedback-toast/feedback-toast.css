@@ -1,0 +1,9 @@
+:host { position:fixed; right:22px; bottom:22px; z-index:1000; pointer-events:none; max-width:min(430px,calc(100vw - 28px)); }
+.toast { display:flex; align-items:center; gap:12px; padding:16px 18px; background:var(--surface-alt); color:var(--text); border:1px solid var(--success); border-radius:15px; box-shadow:0 16px 45px rgba(0,0,0,.5); pointer-events:auto; animation:toast-enter .28s ease both; }
+.toast.error { border-color:var(--accent); }
+.toast-symbol { flex:0 0 auto; display:grid; place-items:center; width:26px; height:26px; border-radius:50%; background:rgba(120,217,176,.15); color:var(--success); font-weight:900; }
+.toast.error .toast-symbol { background:var(--accent-soft); color:var(--accent-light); }
+.toast button { margin-left:auto; border:0; background:transparent; color:var(--text); font-size:24px; padding:0 4px; }
+@keyframes toast-enter { from { opacity:0; transform:translateY(14px) scale(.97); } to { opacity:1; transform:translateY(0) scale(1); } }
+@media(max-width:600px) { :host { right:14px; left:14px; bottom:14px; max-width:none; } .toast { width:100%; } }
+@media(prefers-reduced-motion:reduce) { .toast { animation:none; } }

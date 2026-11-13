@@ -3,6 +3,8 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 
 import { Auth } from '../../../../core/auth/auth';
+import { Feedback } from '../../../../shared/services/feedback';
+import { Sound } from '../../../../shared/services/sound';
 import { MembershipService } from '../../../memberships/services/membership.service';
 import { StudentFeesService } from '../../services/student-fees.service';
 
@@ -16,6 +18,8 @@ export class StudentFeesPage {
   readonly auth = inject(Auth);
   readonly memberships = inject(MembershipService);
   readonly fees = inject(StudentFeesService);
+  private readonly feedback = inject(Feedback);
+  private readonly sound = inject(Sound);
 
   readonly message = signal('');
 
@@ -63,10 +67,11 @@ export class StudentFeesPage {
   payInvoice(invoiceId: string): void {
     const success = this.fees.payInvoice(invoiceId);
 
-    this.message.set(
-      success
-        ? 'Demo payment completed! Membership activated.'
-        : 'Unable to complete demo payment.'
+    this.message.set(success
+      ? 'Demo payment completed! Membership activated.'
+      : 'Unable to complete demo payment.'
     );
+    this.feedback.show(success ? 'success' : 'error', this.message());
+    if (success) this.sound.playSuccess();
   }
 }

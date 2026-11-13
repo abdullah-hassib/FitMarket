@@ -15,3 +15,7 @@
 .back-to-shop { border:1px solid var(--line-bright);background:var(--surface-alt);color:var(--text); }
 .back-to-shop:hover { border-color:var(--accent);color:var(--text); }
 @media(max-width:650px) { .product-details{margin:18px 14px;padding:20px;} }
+
+.quantity-selector button.added { border-color:var(--success); background:rgba(120,217,176,.14); color:var(--success); animation:added-pop .26s ease; }
+@keyframes added-pop { 50% { transform:scale(1.045); } }
+@media(prefers-reduced-motion:reduce){ .quantity-selector button.added { animation:none; } }
