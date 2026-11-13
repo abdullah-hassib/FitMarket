@@ -1,0 +1,33 @@
+name: Browser visual smoke and evidence
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/visual-smoke.yml
+      - scripts/visual-smoke.cjs
+
+permissions:
+  contents: read
+
+jobs:
+  visual-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Install ephemeral Chrome automation
+        run: npm install --no-save puppeteer-core
+      - name: Capture real responsive application screenshots
+        run: node scripts/visual-smoke.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fitmarket-real-visual-evidence
+          path: visual-evidence/*.png
+          if-no-files-found: warn
