@@ -17,6 +17,47 @@
     </section>
   }
 
+  @if (auth.currentUser(); as user) {
+    <section class="history">
+      <h2>My Membership History</h2>
+      @if (userSubscriptions().length === 0) {
+        <p>No memberships requested yet.</p>
+      } @else {
+        @for (subscription of userSubscriptions(); track subscription.id) {
+          <article class="history-item">
+            <div class="membership-history-heading">
+              <strong>{{ memberships.getPlan(subscription.planId)?.name }}</strong>
+              <span class="status">{{ subscription.status }}</span>
+            </div>
+            <p>Requested: {{ subscription.createdAt | date:'mediumDate' }}</p>
+            @if (subscription.startDate) {
+              <p>Started: {{ subscription.startDate | date:'mediumDate' }}</p>
+            }
+            @if (subscription.endDate && subscription.status !== 'cancelled') {
+              <p>Expires: {{ subscription.endDate | date:'mediumDate' }}</p>
+            }
+            @if (subscription.cancelledAt) {
+              <p>Cancelled: {{ subscription.cancelledAt | date:'mediumDate' }}</p>
+            }
+            @if (subscription.status === 'pending') {
+              <p class="membership-note">This request is not yet active. <a routerLink="/student-fees">Pay your invoice in Student Fees</a> or withdraw the request below.</p>
+            }
+            @if (memberships.canCancelSubscription(user.id, subscription)) {
+              <button type="button" class="cancel-btn" (click)="cancelSubscription(subscription.id)">
+                {{ subscription.status === 'pending' ? 'Cancel pending request' : 'Cancel active membership (within 7 days)' }}
+              </button>
+              @if (subscription.status === 'active') {
+                <p class="fine-print">Cancelling ends membership access immediately. Paid demo invoices remain recorded; no refund.</p>
+              }
+            } @else if (subscription.status === 'active') {
+              <p class="membership-note">The seven-day cancellation window has ended.</p>
+            }
+          </article>
+        }
+      }
+    </section>
+  }
+
   <div class="plans-grid">
     @for (plan of memberships.plans; track plan.id) {
       <article class="plan-card">
@@ -124,37 +165,5 @@
     </section>
   }
 
-  @if (auth.currentUser(); as user) {
-    <section class="history">
-      <h2>My Membership History</h2>
-      @if (userSubscriptions().length === 0) {
-        <p>No memberships requested yet.</p>
-      } @else {
-        @for (subscription of userSubscriptions(); track subscription.id) {
-          <article class="history-item">
-            <div class="membership-history-heading">
-              <strong>{{ memberships.getPlan(subscription.planId)?.name }}</strong>
-              <span class="status">{{ subscription.status }}</span>
-            </div>
-            <p>Requested: {{ subscription.createdAt | date:'mediumDate' }}</p>
-            @if (subscription.startDate) {
-              <p>Started: {{ subscription.startDate | date:'mediumDate' }}</p>
-            }
-            @if (subscription.endDate && subscription.status !== 'cancelled') {
-              <p>Expires: {{ subscription.endDate | date:'mediumDate' }}</p>
-            }
-            @if (subscription.cancelledAt) {
-              <p>Cancelled: {{ subscription.cancelledAt | date:'mediumDate' }}</p>
-            }
-            @if (memberships.canCancelSubscription(user.id, subscription)) {
-              <button type="button" class="cancel-btn" (click)="cancelSubscription(subscription.id)">
-                Cancel membership (within 7 days)
-              </button>
-              <p class="fine-print">Cancellation ends access immediately. No demo refund will be issued.</p>
-            }
-          </article>
-        }
-      }
-    </section>
-  }
+
 </section>
