@@ -14,7 +14,7 @@ import { Sound } from '../../../../shared/services/sound';
   selector: 'app-memberships-page',
   imports: [RouterLink, DatePipe, FormsModule],
   templateUrl: './memberships-page.html',
-  styleUrls: ['./memberships-page.css', '../../../shop/pages/checkout/checkout.css']
+  styleUrls: ['./memberships-page.css', '../../../shop/pages/checkout/checkout.css', './membership-checkout.css']
 })
 export class MembershipsPage {
   readonly auth = inject(Auth);
