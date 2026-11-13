@@ -59,3 +59,18 @@ table { font-variant-numeric: tabular-nums; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+/* Persisted compact density: applies across cards, tables and the store. */
+app-root.compact-view .product-image { height: 155px; }
+app-root.compact-view .product-info,
+app-root.compact-view .cards article,
+app-root.compact-view .plan-card,
+app-root.compact-view .order-card,
+app-root.compact-view .cart-item,
+app-root.compact-view .pending-card,
+app-root.compact-view .summary article { padding: 14px; }
+app-root.compact-view .products,
+app-root.compact-view .cards,
+app-root.compact-view .plans-grid { gap: 12px; }
+app-root.compact-view th,
+app-root.compact-view td { padding: 9px 11px; }

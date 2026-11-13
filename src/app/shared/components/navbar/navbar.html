@@ -11,6 +11,15 @@
 
     <!-- Account Controls -->
     <div class="account-actions">
+      <button
+        type="button"
+        class="view-toggle"
+        [attr.aria-pressed]="preferences.compactView()"
+        (click)="preferences.toggleCompactView()"
+        title="Remember layout density in a browser cookie for 30 days"
+      >
+        {{ preferences.compactView() ? 'Comfortable view' : 'Compact view' }}
+      </button>
 
       @if (auth.currentUser(); as user) {
 

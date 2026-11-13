@@ -2,6 +2,7 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { Auth } from '../../../core/auth/auth';
+import { DisplayPreferences } from '../../../core/preferences/display-preferences';
 
 @Component({
   selector: 'app-navbar',
@@ -11,6 +12,7 @@ import { Auth } from '../../../core/auth/auth';
 })
 export class Navbar {
   readonly auth = inject(Auth);
+  readonly preferences = inject(DisplayPreferences);
   private readonly router = inject(Router);
 
   logout(): void {
