@@ -1,6 +1,7 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { BudgetChart } from '../components/budget-chart';
 import { RouterLink } from '@angular/router';
 import { BudgetStore } from '../services/budget-store';
 import {
@@ -14,7 +15,7 @@ import {
 
 @Component({
   selector: 'app-budgets-page',
-  imports: [FormsModule, CurrencyPipe, RouterLink],
+  imports: [FormsModule, CurrencyPipe, RouterLink, BudgetChart],
   templateUrl: './budgets-page.html',
   styleUrl: './budgets-page.css',
 })
