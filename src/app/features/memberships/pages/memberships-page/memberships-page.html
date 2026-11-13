@@ -8,6 +8,15 @@
     <p class="feedback" role="status">{{ message() }}</p>
   }
 
+  @if (paymentSuccess()) {
+    <section class="order-confirmation membership-confirmation" aria-labelledby="membership-confirmation-title">
+      <div class="success-mark" aria-hidden="true">✓</div>
+      <h2 id="membership-confirmation-title">Membership Activated!</h2>
+      <p>Your simulated payment was approved. Your paid invoice is available in Student Fees.</p>
+      <a routerLink="/student-fees" class="order-history-link">View my invoice</a>
+    </section>
+  }
+
   <div class="plans-grid">
     @for (plan of memberships.plans; track plan.id) {
       <article class="plan-card">
