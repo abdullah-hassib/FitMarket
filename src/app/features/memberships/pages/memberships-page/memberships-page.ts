@@ -120,14 +120,28 @@ export class MembershipsPage {
   }
 
   cancelSubscription(subscriptionId: string): void {
-    this.paymentSuccess.set(false);
     const user = this.auth.currentUser();
-    if (!user) return;
+    const subscription = this.userSubscriptions().find(item => item.id === subscriptionId);
+    if (!user || !subscription) return;
+    if (!window.confirm(
+      subscription.status === 'pending'
+        ? 'Withdraw this unpaid membership request?'
+        : 'Cancel this active membership? Access ends immediately, and no demo refund will be issued.'
+    )) return;
+
     const success = this.memberships.cancelSubscription(user.id, subscriptionId);
+    if (success && subscription.status === 'pending') {
+      this.fees.voidUnpaidInvoiceForSubscription(subscriptionId);
+    }
+    this.paymentSuccess.set(false);
     this.message.set(success
-      ? 'Membership cancelled. This demo cancellation does not issue a refund.'
-      : 'Cancellation is only available within seven days of membership activation.');
+      ? subscription.status === 'pending'
+        ? 'Pending membership request cancelled.'
+        : 'Membership cancelled. This demo cancellation does not issue a refund.'
+      : 'Unable to cancel: only your own pending request or an active membership within seven days is eligible.'
+    );
     this.feedback.show(success ? 'success' : 'error', this.message());
+    this.sound.unlock();
     if (success) this.sound.playSuccess();
     else this.sound.playError();
   }
