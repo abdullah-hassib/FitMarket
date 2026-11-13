@@ -11,6 +11,11 @@
 
     <!-- Account Controls -->
     <div class="account-actions">
+      <button type="button" class="sound-toggle" (click)="sound.toggle()"
+        [attr.aria-pressed]="sound.enabled()"
+        [attr.aria-label]="sound.enabled() ? 'Turn off feedback sounds' : 'Turn on feedback sounds'">
+        {{ sound.enabled() ? '🔊 Sound on' : '🔇 Sound off' }}
+      </button>
       <button
         type="button"
         class="view-toggle"

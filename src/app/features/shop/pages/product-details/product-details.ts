@@ -1,5 +1,7 @@
 
-import { Component, inject, computed, signal } from '@angular/core';
+import { Component, inject, computed, signal, OnDestroy } from '@angular/core';
+import { Feedback } from '../../../../shared/services/feedback';
+import { Sound } from '../../../../shared/services/sound';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
@@ -14,7 +16,11 @@ import { calculateFinalPrice } from '../../utils/pricing';
   templateUrl: './product-details.html',
   styleUrl: './product-details.css',
 })
-export class ProductDetails {
+export class ProductDetails implements OnDestroy {
+  private readonly feedback = inject(Feedback);
+  private readonly sound = inject(Sound);
+  private addedTimer?: ReturnType<typeof setTimeout>;
+  readonly added = signal(false);
 
   private readonly route = inject(ActivatedRoute);
   private readonly productService = inject(ProductService);
@@ -85,12 +91,23 @@ addToCart(): void {
     this.quantity()
   );
 
-  this.cartMessage.set(
-    success
-      ? 'Product added to cart!'
-      : 'Unable to add product. Check available stock.'
+  this.cartMessage.set(success
+    ? 'Product added to cart!'
+    : 'Unable to add product. Check available stock.'
   );
+  if (!success) {
+    this.feedback.show('error', 'Unable to add product. Check available stock.');
+    return;
+  }
+
+  this.feedback.show('success', `${product.name} added to your cart!`);
+  this.sound.playAdded();
+  this.added.set(true);
+  if (this.addedTimer) clearTimeout(this.addedTimer);
+  this.addedTimer = setTimeout(() => this.added.set(false), 1400);
 }
 
-  
+  ngOnDestroy(): void {
+    if (this.addedTimer) clearTimeout(this.addedTimer);
+  }
 }

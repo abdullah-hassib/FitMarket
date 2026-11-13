@@ -2,6 +2,7 @@
 import { Injectable, inject, signal, effect } from '@angular/core';
 import { loadStoredArray, saveStoredArray } from '../utils/storage';
 import { SaleRecord, SaleItem } from '../../../models/sale.model';
+import { DemoPaymentReceipt, isDemoPaymentReceipt } from '../../../models/demo-payment.model';
 import { ProductService } from './product';
 import { Cart } from './cart';
 import { Auth } from '../../../core/auth/auth';
@@ -84,7 +85,8 @@ private isStoredSale(value: unknown): value is SaleRecord {
         Number.isInteger(sale['staffId']) &&
         sale['staffId'] > 0)) &&
     (sale['customerId'] === undefined ||
-      (typeof sale['customerId'] === 'number' && Number.isSafeInteger(sale['customerId']) && sale['customerId'] > 0))
+      (typeof sale['customerId'] === 'number' && Number.isSafeInteger(sale['customerId']) && sale['customerId'] > 0)) &&
+    (sale['payment'] === undefined || isDemoPaymentReceipt(sale['payment']))
   );
 }
 
@@ -104,7 +106,8 @@ constructor() {
 }
 
 
-  completeSale(): SaleRecord | null {
+  completeSale(payment: DemoPaymentReceipt): SaleRecord | null {
+    if (!isDemoPaymentReceipt(payment)) return null;
     const customer = this.auth.currentUser();
     if (!customer) return null;
 
@@ -172,7 +175,8 @@ constructor() {
       subtotal,
       discountAmount,
       total,
-      customerId: customer.id
+      customerId: customer.id,
+      payment
     };
 
     // Save the completed sale

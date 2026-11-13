@@ -1,0 +1,9 @@
+@if (feedback.notice(); as notice) {
+  <div class="toast" [class.error]="notice.kind === 'error'"
+    [attr.role]="notice.kind === 'error' ? 'alert' : 'status'"
+    aria-live="polite">
+    <span class="toast-symbol" aria-hidden="true">{{ notice.kind === 'success' ? '✓' : '!' }}</span>
+    <span>{{ notice.message }}</span>
+    <button type="button" (click)="feedback.dismiss()" aria-label="Dismiss notification">×</button>
+  </div>
+}

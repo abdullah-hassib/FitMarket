@@ -1,3 +1,5 @@
+import { DemoPaymentReceipt } from './demo-payment.model';
+
 export interface SaleItem {
   productId: number;
   quantity: number;
@@ -14,4 +16,5 @@ export interface SaleRecord {
   total: number;
   staffId?: number;
   customerId?: number; // Demo account ownership; older orders may be unassigned.
+  payment?: DemoPaymentReceipt; // Historical orders can predate the demo payment form.
 }
