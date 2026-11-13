@@ -52,24 +52,11 @@
     </div>
     <section class="panel" aria-labelledby="chart-title">
       <h2 id="chart-title">Across departments</h2>
-      <p>All amounts in EGP. Bars share one scale; negative balances point to a shortfall.</p>
+      <p>All amounts in EGP. Interactive Chart.js bars show income, expenses and signed balances. An accessible table follows.</p>
       <div class="legend">
-        <span>■ Income</span><span>▧ Expenses</span><span>● Balance (absolute size)</span>
+        <span>■ Income</span><span>■ Expenses</span><span>■ Balance (negative below zero)</span>
       </div>
-      <div class="charts" aria-hidden="true">
-        @for (s of summaries(); track s.department) {
-          <div>
-            <h3>{{ s.department }}</h3>
-            <div class="bar income" [style.width.%]="width(s.income)"></div>
-            <div class="bar expense" [style.width.%]="width(s.expenses)"></div>
-            <div
-              class="bar balance"
-              [class.loss]="s.balance < 0"
-              [style.width.%]="width(s.balance)"
-            ></div>
-          </div>
-        }
-      </div>
+      <app-budget-chart [summaries]="summaries()" />
       <div class="table-wrap">
         <table>
           <caption>

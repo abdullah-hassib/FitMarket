@@ -1,0 +1,3 @@
+.budget-chart { width: 100%; height: min(400px, 55vw); min-height: 270px; margin: 22px 0 28px; padding: 18px 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-alt); }
+canvas { display: block; width: 100%; }
+@media(max-width:600px) { .budget-chart { height: 340px; padding: 10px 4px; } }
