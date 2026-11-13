@@ -47,6 +47,31 @@ describe('membership test-card checkout', () => {
     expect(page.cvv).toBe('');
   });
 
+  it('refunds a cancelled paid membership exactly once and preserves the original payment', () => {
+    const sub = memberships.requestSubscription(42, 'basic')!;
+    const invoice = fees.createInvoiceForSubscription(sub.id)!;
+    expect(fees.payInvoice(invoice.id)).toBe(true);
+    expect(memberships.subscriptions()[0].status).toBe('active');
+    expect(memberships.cancelSubscription(42, sub.id)).toBe(true);
+
+    const refund = fees.refundCancelledSubscription(sub.id);
+    expect(refund).not.toBeNull();
+    expect(refund!.amountEGP).toBe(500);
+    expect(refund!.invoiceId).toBe(invoice.id);
+    expect(fees.invoices()[0].status).toBe('refunded');
+    expect(fees.payments().length).toBe(1);
+    expect(fees.refunds().length).toBe(1);
+    expect(fees.refundCancelledSubscription(sub.id)).toBeNull();
+    expect(fees.refunds().length).toBe(1);
+  });
+
+  it('does not refund a withdrawn unpaid request', () => {
+    const sub = memberships.requestSubscription(42, 'basic')!;
+    expect(memberships.cancelSubscription(42, sub.id)).toBe(true);
+    expect(fees.refundCancelledSubscription(sub.id)).toBeNull();
+    expect(fees.refunds().length).toBe(0);
+  });
+
   it('activates once on approval and saves only the card type and last four', async () => {
     page.selectPlan('standard');
     page.cvv = '123';
