@@ -20,7 +20,7 @@ const entry: BudgetEntry = {
 describe('budget calculations', () => {
   it('returns all departments with zero totals for no records', () => {
     expect(summarize([])).toEqual(
-      ['Training', 'Shop', 'Events'].map((department) => ({
+      (['Training', 'Shop', 'Events'] as const).map((department) => ({
         department,
         income: 0,
         expenses: 0,

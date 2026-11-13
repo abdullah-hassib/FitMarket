@@ -7,6 +7,9 @@ describe('Cart', () => {
   let service: Cart;
 
   beforeEach(() => {
+    // Karma runs suites in one real browser: isolate persisted demo cart state.
+    localStorage.removeItem('fitmarket.shop.cart.v1');
+    localStorage.removeItem('fitmarket.shop.products.v1');
     TestBed.configureTestingModule({});
     service = TestBed.inject(Cart);
   });
