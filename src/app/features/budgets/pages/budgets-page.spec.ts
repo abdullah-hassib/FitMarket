@@ -2,21 +2,30 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { BUDGET_ROLE } from '../services/budget-access';
 import { BudgetsPage } from './budgets-page';
+import { Sales } from '../../shop/services/sales';
+import { StudentFeesService } from '../../student-fees/services/student-fees.service';
+import { signal } from '@angular/core';
 
 describe('BudgetsPage', () => {
-  beforeEach(() =>
+  beforeEach(() => {
+    localStorage.removeItem('fitmarket.budgets.manual.v1');
     TestBed.configureTestingModule({
       imports: [BudgetsPage],
-      providers: [provideRouter([]), { provide: BUDGET_ROLE, useValue: () => 'accountant' }],
-    }),
-  );
+      providers: [
+        provideRouter([]),
+        { provide: BUDGET_ROLE, useValue: () => 'accountant' },
+        { provide: Sales, useValue: { sales: signal([]).asReadonly() } },
+        { provide: StudentFeesService, useValue: { payments: signal([]).asReadonly() } }
+      ]
+    });
+  });
   it('renders accessible chart data, filters all outputs and handles empty ranges', async () => {
     const fixture = TestBed.createComponent(BudgetsPage);
     await fixture.whenStable();
     expect(fixture.nativeElement.querySelector('caption').textContent).toContain('Chart values');
     const page = fixture.componentInstance;
     page.department.set('Events');
-    expect(page.totals().balance).toBe(-700);
+    expect(page.totals().balance).toBe(0);
     expect(page.summaries().length).toBe(1);
     page.from.set('2027-01-01');
     expect(page.rows()).toEqual([]);

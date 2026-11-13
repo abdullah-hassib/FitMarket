@@ -1,6 +1,6 @@
 
 import { Component, computed, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 
@@ -8,7 +8,7 @@ import { Sales } from '../../services/sales';
 
 @Component({
   selector: 'app-order-confirmation',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './order-confirmation.html',
   styleUrl: './order-confirmation.css',
 })

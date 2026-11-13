@@ -29,3 +29,14 @@ button {
   color: white;
   cursor: pointer;
 }
+
+.profile-container { max-width:760px; }
+.profile-container h1 { font-size:clamp(32px,5vw,46px);letter-spacing:-.05em; }
+.profile-card { background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:34px;box-shadow:var(--shadow); }
+.profile-card p { color:var(--text-muted); }
+.profile-card p strong { color:var(--text); }
+.profile-card button { background:var(--accent);border-radius:10px; }
+.profile-picture { border:3px solid var(--accent); }
+.profile-orders-link { display:inline-flex;padding:12px 19px;margin:10px 16px 10px 0;border-radius:10px;border:1px solid var(--accent);color:var(--accent-light);text-decoration:none;font-weight:800; }
+.profile-orders-link:hover { background:var(--accent-soft); }
+@media(max-width:600px) { .profile-card{padding:22px;} }

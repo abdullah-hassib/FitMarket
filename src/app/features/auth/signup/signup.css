@@ -46,3 +46,13 @@ button:disabled {
 small {
   color: #64748b;
 }
+
+.signup-container { background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:35px;box-shadow:var(--shadow); }
+.signup-container h1 { font-size:clamp(30px,5vw,44px); }
+.signup-container input,.signup-container select { background:var(--surface-alt);color:var(--text);border-color:var(--line-bright);border-radius:10px; }
+.signup-container button { background:var(--accent);border-radius:10px;font-weight:850; }
+.signup-container button:hover:not(:disabled) { background:var(--accent-light);color:#17171a; }
+.signup-container small { color:var(--text-muted); }
+.signup-container .success { color:#b3f0d0;background:#18392d;border:1px solid #366e55; }
+.signup-container .error { color:var(--accent-light); }
+@media(max-width:540px) { .signup-container { margin:20px 14px;padding:24px; } }

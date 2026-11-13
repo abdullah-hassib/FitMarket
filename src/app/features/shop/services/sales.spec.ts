@@ -3,14 +3,23 @@ import { TestBed } from '@angular/core/testing';
 import { Sales } from './sales';
 import { Cart } from './cart';
 import { ProductService } from './product';
+import { Auth } from '../../../core/auth/auth';
+import { signal } from '@angular/core';
 
 describe('Sales', () => {
   let sales: Sales;
   let cart: Cart;
   let products: ProductService;
+  const signedIn = signal<{ id: number } | null>({ id: 42 });
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    signedIn.set({ id: 42 });
+    localStorage.removeItem('fitmarket.shop.sales.v1');
+    localStorage.removeItem('fitmarket.shop.cart.v1');
+    localStorage.removeItem('fitmarket.shop.products.v1');
+    TestBed.configureTestingModule({
+      providers: [{ provide: Auth, useValue: { currentUser: signedIn.asReadonly() } }]
+    });
 
     sales = TestBed.inject(Sales);
     cart = TestBed.inject(Cart);
@@ -28,10 +37,23 @@ describe('Sales', () => {
     const sale = sales.completeSale();
 
     expect(sale).not.toBeNull();
+    expect(sale?.customerId).toBe(42);
+    expect(sale?.items[0].productName).toBe('Adjustable Dumbbell');
     expect(sale?.subtotal).toBe(5000);
     expect(sale?.total).toBe(5000);
     expect(sale?.items[0].unitPrice).toBe(2500);
     expect(sales.sales().length).toBe(1);
+  });
+
+  it('requires login and does not expose another account receipt', () => {
+    cart.addItem(1, 1);
+    signedIn.set(null);
+    expect(sales.completeSale()).toBeNull();
+    signedIn.set({ id: 42 });
+    const order = sales.completeSale();
+    signedIn.set({ id: 77 });
+    expect(sales.getMyOrders()).toEqual([]);
+    expect(sales.getSaleById(order!.id)).toBeUndefined();
   });
 
   it('should reduce stock after checkout', () => {

@@ -48,3 +48,13 @@ select:disabled {
   margin-top: 20px;
   color: #64748b;
 }
+
+.user-management { color:var(--text); }
+.user-management h1 { font-size:clamp(34px,5vw,48px); }
+.user-management table { background:var(--surface);border:1px solid var(--line);border-radius:15px;overflow:hidden; }
+.user-management th { background:var(--surface-alt); }
+.user-management th,.user-management td { border-bottom-color:var(--line); }
+.user-management select { background:var(--surface-alt);color:var(--text);border:1px solid var(--line-bright);border-radius:9px; }
+.user-management .delete-btn { background:var(--accent);border-radius:10px;font-weight:800; }
+.user-management .delete-btn:hover:not(:disabled) { background:var(--accent-light);color:#17171a; }
+.user-management .note { color:var(--text-muted); }

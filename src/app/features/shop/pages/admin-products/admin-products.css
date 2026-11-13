@@ -71,3 +71,15 @@ th, td {
     padding: 16px;
   }
 }
+
+
+.admin-products { color:var(--text); }
+.admin-products h1 { font-size:clamp(30px,4vw,47px); }
+.stock-alert { background:#30251f; border-color:#76523a; color:#ffdbb0; border-radius:13px; }
+.product-form { background:var(--surface); border-color:var(--line); border-radius:18px; }
+.product-form input,.product-form select,.product-form textarea { background:var(--surface-alt); color:var(--text); border-color:var(--line-bright); border-radius:10px; }
+.form-actions button, .admin-products button { padding:11px 16px;background:var(--accent);color:white;border:1px solid transparent;border-radius:10px;font-weight:750; }
+.admin-products button:hover:not(:disabled) { background:var(--accent-light);color:#151519; }
+.admin-products table { background:var(--surface);border-radius:12px;overflow:hidden; }
+.admin-products th { background:var(--surface-alt); }
+.admin-products th,.admin-products td { border-bottom-color:var(--line); }

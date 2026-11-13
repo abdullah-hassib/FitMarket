@@ -2,6 +2,7 @@ export interface SaleItem {
   productId: number;
   quantity: number;
   unitPrice: number;
+  productName?: string;
 }
 
 export interface SaleRecord {
@@ -12,4 +13,5 @@ export interface SaleRecord {
   discountAmount: number;
   total: number;
   staffId?: number;
+  customerId?: number; // Demo account ownership; older orders may be unassigned.
 }
