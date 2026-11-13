@@ -37,10 +37,26 @@ export class BudgetStore {
         source: 'membership' as const
       }));
 
+    const refunds: LedgerEntry[] = this.studentFees.refunds()
+      .filter(r =>
+        Number.isFinite(r.amountEGP) && r.amountEGP > 0 &&
+        typeof r.refundedAt === 'string' && /^\d{4}-\d{2}-\d{2}/.test(r.refundedAt)
+      )
+      .map(r => ({
+        id: `membership-refund:${r.id}`,
+        department: 'Training' as const,
+        type: 'expense' as const,
+        amount: Math.round(r.amountEGP * 100) / 100,
+        date: r.refundedAt.slice(0, 10),
+        description: `Refund for membership invoice ${r.invoiceId.slice(0, 8)}`,
+        source: 'membership' as const
+      }));
+
     return [
       ...this.manual().map(e => ({ ...e, source: 'manual' as const })),
       ...shop,
-      ...memberships
+      ...memberships,
+      ...refunds
     ].map(e => ({ ...e }));
   });
 
