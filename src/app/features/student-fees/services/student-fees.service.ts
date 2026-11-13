@@ -4,6 +4,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { Auth } from '../../../core/auth/auth';
 import { MembershipService } from '../../memberships/services/membership.service';
 import { Invoice, PaymentRecord } from '../models/invoice.model';
+import { DemoPaymentReceipt } from '../../../models/demo-payment.model';
 
 const STORAGE_KEY = 'fitmarket_student_fees_v1';
 
@@ -108,7 +109,7 @@ export class StudentFeesService {
   }
 
   // Simulate paying an invoice.
-  payInvoice(invoiceId: string): boolean {
+  payInvoice(invoiceId: string, receipt?: DemoPaymentReceipt): boolean {
     const user = this.auth.currentUser();
 
     if (!user) return false;
@@ -166,7 +167,8 @@ export class StudentFeesService {
       userId: invoice.userId,
       amountEGP: invoice.amountEGP,
       paidAt: now,
-      method: 'demo'
+      method: receipt?.method ?? 'demo',
+      last4: receipt?.last4
     };
 
     return this.save({
