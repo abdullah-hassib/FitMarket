@@ -9,6 +9,7 @@ import {
 
 const ACCOUNTS_KEY = 'fitmarket_demo_accounts_v1';
 const SESSION_KEY = 'fitmarket_session_user_id_v1';
+const DEMO_AVATAR_KEY = 'fitmarket_demo_avatar_v1_';
 
 export interface SignupData {
   username: string;
@@ -107,7 +108,7 @@ export class Auth {
         account => account.user.id === id
       )?.user;
 
-      return demoUser ?? registeredUser ?? null;
+      return demoUser ? this.withDemoPhoto(demoUser) : (registeredUser ?? null);
     } catch {
       return null;
     }
@@ -156,7 +157,7 @@ export class Auth {
       return false;
     }
 
-    this.currentUserState.set(user);
+    this.currentUserState.set(demoAccount ? this.withDemoPhoto(user) : user);
     return true;
   }
 
@@ -307,6 +308,47 @@ deleteUser(id: number): boolean {
 
   return this.saveAccounts(updatedAccounts);
 }
+
+
+  private withDemoPhoto(user: User): User {
+    try {
+      const stored = localStorage.getItem(DEMO_AVATAR_KEY + user.id);
+      return stored && /^data:image\/(jpeg|png|webp);base64,/.test(stored)
+        ? { ...user, profilePicture: stored }
+        : user;
+    } catch {
+      return user;
+    }
+  }
+
+  /** Update the current account's avatar; only compact local JPG/PNG/WebP data URLs. */
+  updateProfilePicture(photo: string): boolean {
+    const current = this.currentUser();
+    if (!current || photo.length > 560_000 ||
+        !/^data:image\/(jpeg|png|webp);base64,[a-zA-Z0-9+/=]+$/.test(photo)) {
+      return false;
+    }
+
+    const user = { ...current, profilePicture: photo };
+    const exists = this.registeredAccounts.some(account => account.user.id === current.id);
+    if (exists) {
+      const updated = this.registeredAccounts.map(account =>
+        account.user.id === current.id ? { ...account, user } : account
+      );
+      if (!this.saveAccounts(updated)) return false;
+    } else if (MOCK_ACCOUNTS.some(account => account.user.id === current.id)) {
+      try {
+        localStorage.setItem(DEMO_AVATAR_KEY + current.id, photo);
+      } catch {
+        return false;
+      }
+    } else {
+      return false;
+    }
+
+    this.currentUserState.set(user);
+    return true;
+  }
 
   logout(): void {
     try {
