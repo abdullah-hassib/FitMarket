@@ -100,7 +100,7 @@ export class MembershipsPage {
       }
 
       const invoice = this.fees.createInvoiceForSubscription(subscription.id);
-      if (!invoice || !this.fees.payInvoice(invoice.id)) {
+      if (!invoice || !this.fees.payInvoice(invoice.id, result.receipt)) {
         this.paymentError.set('Your membership is pending. Open Student Fees to complete the demo payment.');
         this.feedback.show('error', this.paymentError());
         this.sound.playError();
