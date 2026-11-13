@@ -11,7 +11,7 @@ export interface BudgetEntry {
   description: string;
 }
 export interface LedgerEntry extends BudgetEntry {
-  source: 'manual' | 'shop';
+  source: 'manual' | 'shop' | 'membership';
 }
 export interface Summary {
   department: Department;

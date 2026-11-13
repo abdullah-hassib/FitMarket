@@ -16,7 +16,7 @@ describe('BudgetsPage', () => {
     expect(fixture.nativeElement.querySelector('caption').textContent).toContain('Chart values');
     const page = fixture.componentInstance;
     page.department.set('Events');
-    expect(page.totals().balance).toBe(-700);
+    expect(page.totals().balance).toBe(0);
     expect(page.summaries().length).toBe(1);
     page.from.set('2027-01-01');
     expect(page.rows()).toEqual([]);

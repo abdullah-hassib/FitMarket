@@ -1,63 +1,70 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { SaleRecord } from '../../../models/sale.model';
+import { Sales } from '../../shop/services/sales';
+import { StudentFeesService } from '../../student-fees/services/student-fees.service';
 import { BUDGET_ROLE, canManageBudgets } from './budget-access';
 import { BudgetEntry, LedgerEntry, salesLedger, validateEntry } from './budget-engine';
 
-const SEED: BudgetEntry[] = [
-  {
-    id: 'demo:1',
-    department: 'Training',
-    type: 'income',
-    amount: 18000,
-    date: '2026-11-01',
-    description: 'Fictional academy subscriptions',
-  },
-  {
-    id: 'demo:2',
-    department: 'Training',
-    type: 'expense',
-    amount: 7200,
-    date: '2026-11-03',
-    description: 'Fictional equipment maintenance',
-  },
-  {
-    id: 'demo:3',
-    department: 'Shop',
-    type: 'expense',
-    amount: 2600,
-    date: '2026-11-04',
-    description: 'Fictional inventory delivery',
-  },
-  {
-    id: 'demo:4',
-    department: 'Events',
-    type: 'income',
-    amount: 4500,
-    date: '2026-11-05',
-    description: 'Fictional workshop registrations',
-  },
-  {
-    id: 'demo:5',
-    department: 'Events',
-    type: 'expense',
-    amount: 5200,
-    date: '2026-11-06',
-    description: 'Fictional venue hire',
-  },
-];
 @Injectable({ providedIn: 'root' })
 export class BudgetStore {
   private readonly role = inject(BUDGET_ROLE);
+  private readonly shopSales = inject(Sales);
+  private readonly studentFees = inject(StudentFeesService);
+  private readonly manualStorageKey = 'fitmarket.budgets.manual.v1';
+
   readonly allowed = computed(() => canManageBudgets(this.role()));
-  private readonly manual = signal<BudgetEntry[]>(SEED.map((e) => ({ ...e })));
-  private readonly sales = signal<LedgerEntry[]>([]);
-  readonly ledger = computed<LedgerEntry[]>(() =>
-    this.allowed()
-      ? [...this.manual().map((e) => ({ ...e, source: 'manual' as const })), ...this.sales()].map(
-          (e) => ({ ...e }),
-        )
-      : [],
-  );
+  // Real demo transactions are reactive; no fictional opening income/expenses.
+  private readonly manual = signal<BudgetEntry[]>(this.loadManual());
+  // Optional override retained for integrations/tests using the existing snapshot API.
+  private readonly salesOverride = signal<LedgerEntry[] | null>(null);
+
+  readonly ledger = computed<LedgerEntry[]>(() => {
+    if (!this.allowed()) return [];
+
+    const shop = this.salesOverride() ?? salesLedger(this.shopSales.sales());
+    const memberships: LedgerEntry[] = this.studentFees.payments()
+      .filter(p =>
+        Number.isFinite(p.amountEGP) && p.amountEGP > 0 &&
+        typeof p.paidAt === 'string' && /^\\d{4}-\\d{2}-\\d{2}/.test(p.paidAt)
+      )
+      .map(p => ({
+        id: `membership:${p.id}`,
+        department: 'Training' as const,
+        type: 'income' as const,
+        amount: Math.round(p.amountEGP * 100) / 100,
+        date: p.paidAt.slice(0, 10),
+        description: `Paid membership invoice ${p.invoiceId.slice(0, 8)}`,
+        source: 'membership' as const
+      }));
+
+    return [
+      ...this.manual().map(e => ({ ...e, source: 'manual' as const })),
+      ...shop,
+      ...memberships
+    ].map(e => ({ ...e }));
+  });
+
+  private loadManual(): BudgetEntry[] {
+    try {
+      const raw = localStorage.getItem(this.manualStorageKey);
+      const value: unknown = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(value)) return [];
+      return value.filter((e): e is BudgetEntry =>
+        e !== null && typeof e === 'object' &&
+        typeof e.id === 'string' && typeof e.description === 'string' &&
+        validateEntry(e as BudgetEntry) === null
+      );
+    } catch { return []; }
+  }
+
+  private saveManual(rows: BudgetEntry[]): void {
+    try {
+      localStorage.setItem(this.manualStorageKey, JSON.stringify(rows));
+      this.manual.set(rows);
+    } catch {
+      throw new Error('Unable to save budget record in browser storage.');
+    }
+  }
   save(entry: BudgetEntry, editingId?: string): void {
     if (!this.allowed()) throw new Error('Accountant or admin access required.');
     const error = validateEntry(entry);
@@ -69,12 +76,13 @@ export class BudgetStore {
       description: entry.description.trim(),
       id: editingId ?? crypto.randomUUID(),
     };
-    this.manual.update((rows) =>
-      editingId ? rows.map((e) => (e.id === editingId ? row : e)) : [...rows, row],
-    );
+    const updated = editingId
+      ? this.manual().map(e => e.id === editingId ? row : e)
+      : [...this.manual(), row];
+    this.saveManual(updated);
   }
   replaceShopSales(snapshot: readonly SaleRecord[]): void {
     if (!this.allowed()) throw new Error('Accountant or admin access required.');
-    this.sales.set(salesLedger(snapshot));
+    this.salesOverride.set(salesLedger(snapshot));
   }
 }
