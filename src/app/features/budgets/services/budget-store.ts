@@ -25,7 +25,7 @@ export class BudgetStore {
     const memberships: LedgerEntry[] = this.studentFees.payments()
       .filter(p =>
         Number.isFinite(p.amountEGP) && p.amountEGP > 0 &&
-        typeof p.paidAt === 'string' && /^\\d{4}-\\d{2}-\\d{2}/.test(p.paidAt)
+        typeof p.paidAt === 'string' && /^\d{4}-\d{2}-\d{2}/.test(p.paidAt)
       )
       .map(p => ({
         id: `membership:${p.id}`,

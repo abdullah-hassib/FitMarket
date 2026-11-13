@@ -2,14 +2,23 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { BUDGET_ROLE } from '../services/budget-access';
 import { BudgetsPage } from './budgets-page';
+import { Sales } from '../../shop/services/sales';
+import { StudentFeesService } from '../../student-fees/services/student-fees.service';
+import { signal } from '@angular/core';
 
 describe('BudgetsPage', () => {
-  beforeEach(() =>
+  beforeEach(() => {
+    localStorage.removeItem('fitmarket.budgets.manual.v1');
     TestBed.configureTestingModule({
       imports: [BudgetsPage],
-      providers: [provideRouter([]), { provide: BUDGET_ROLE, useValue: () => 'accountant' }],
-    }),
-  );
+      providers: [
+        provideRouter([]),
+        { provide: BUDGET_ROLE, useValue: () => 'accountant' },
+        { provide: Sales, useValue: { sales: signal([]).asReadonly() } },
+        { provide: StudentFeesService, useValue: { payments: signal([]).asReadonly() } }
+      ]
+    });
+  });
   it('renders accessible chart data, filters all outputs and handles empty ranges', async () => {
     const fixture = TestBed.createComponent(BudgetsPage);
     await fixture.whenStable();

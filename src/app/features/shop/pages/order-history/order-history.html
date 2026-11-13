@@ -24,6 +24,9 @@
           <p><span>{{ item.productName || ('Product #' + item.productId) }} × {{ item.quantity }}</span><strong>{{ item.unitPrice * item.quantity | currency:'EGP':'code' }}</strong></p>
         }
       </div>
+      @if (order.discountAmount > 0) {
+        <p class="order-discount">Discount applied: −{{ order.discountAmount | currency:'EGP':'code' }}</p>
+      }
       <div class="order-footer">
         <strong>{{ order.total | currency:'EGP':'code' }}</strong>
         <a [routerLink]="['/shop/order', order.id]">View receipt →</a>

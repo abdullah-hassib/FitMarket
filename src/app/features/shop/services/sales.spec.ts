@@ -15,6 +15,8 @@ describe('Sales', () => {
   beforeEach(() => {
     signedIn.set({ id: 42 });
     localStorage.removeItem('fitmarket.shop.sales.v1');
+    localStorage.removeItem('fitmarket.shop.cart.v1');
+    localStorage.removeItem('fitmarket.shop.products.v1');
     TestBed.configureTestingModule({
       providers: [{ provide: Auth, useValue: { currentUser: signedIn.asReadonly() } }]
     });
