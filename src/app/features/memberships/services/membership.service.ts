@@ -167,7 +167,7 @@ export class MembershipService {
       now - startedAt <= 7 * 24 * 60 * 60 * 1000;
   }
 
-  /** Cancellation stops demo access; it does not refund or erase a paid invoice. */
+  /** Cancellation stops access; Student Fees records any eligible demo refund separately. */
   cancelSubscription(userId: number, subscriptionId: string): boolean {
     const subscription = this.subscriptions().find(item => item.id === subscriptionId);
     if (!subscription || !this.canCancelSubscription(userId, subscription)) return false;
