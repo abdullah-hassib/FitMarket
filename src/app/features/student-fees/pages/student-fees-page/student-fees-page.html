@@ -150,7 +150,7 @@
                   {{ payment.paidAt | date:'mediumDate' }}
                 </td>
 
-                <td>Demo Payment</td>
+                <td>{{ payment.method === 'demo' ? 'Demo Payment' : payment.method }} @if (payment.last4) { (•••• {{ payment.last4 }}) }</td>
               </tr>
             }
           </tbody>
