@@ -38,13 +38,14 @@ async function check(page,label) {
 async function open(browser, pathname, filename, viewport, userId){
   const page = await browser.newPage();
   await page.setViewport(viewport);
-  await page.evaluateOnNewDocument((id,s,f)=>{
+  await page.evaluateOnNewDocument((id,s,f,seedCart)=>{
     try {
       localStorage.setItem('fitmarket.shop.sales.v1',JSON.stringify([s]));
       localStorage.setItem('fitmarket_student_fees_v1',JSON.stringify(f));
       if(id)sessionStorage.setItem('fitmarket_session_user_id_v1',String(id));
+      if(seedCart)localStorage.setItem('fitmarket.shop.cart.v1',JSON.stringify([{productId:1,quantity:2}]));
     }catch{}
-  },userId,sale,fees);
+  },userId,sale,fees,pathname === '/shop/checkout');
   await page.goto(rootUrl+pathname,{waitUntil:'networkidle0'});
   await new Promise(r=>setTimeout(r,850));
   await check(page,filename);
@@ -75,6 +76,31 @@ async function open(browser, pathname, filename, viewport, userId){
   await open(browser,'/','home-mobile.png',mobile,null).then(p=>p.close());
   await open(browser,'/shop','shop-mobile.png',mobile,null).then(p=>p.close());
   await open(browser,'/budgets','budgets-mobile.png',mobile,3).then(p=>p.close());
+  const checkout = await open(browser,'/shop/checkout','checkout-desktop.png',desktop,1);
+  await checkout.type('#demo-cvv','123');
+  await checkout.click('.pay-button');
+  await checkout.waitForFunction(() => location.pathname.startsWith('/shop/order/'),{timeout:10000});
+  const approved = await checkout.evaluate(() => {
+    const sales = JSON.parse(localStorage.getItem('fitmarket.shop.sales.v1') || '[]');
+    const stored = JSON.stringify({ sales, cart: localStorage.getItem('fitmarket.shop.cart.v1') });
+    return { sale: sales.find(s => s.payment?.status === 'demo-paid'), stored };
+  });
+  if (!approved.sale || approved.sale.payment.last4 !== '4242') throw Error('Approved demo payment did not record an order');
+  if (approved.stored.includes('4242 4242') || approved.stored.includes('"cvv"')) throw Error('Sensitive card fields were persisted');
+  if (!(await checkout.evaluate(() => document.body.innerText)).includes('Order Confirmed!')) throw Error('Missing receipt after demo payment');
+  await checkout.close();
+
+  const declined = await open(browser,'/shop/checkout','checkout-mobile.png',mobile,1);
+  await declined.click('.test-card:last-child');
+  await declined.type('#demo-cvv','123');
+  await declined.click('.pay-button');
+  await declined.waitForSelector('.payment-error');
+  const afterDecline = await declined.evaluate(() => ({
+    items:JSON.parse(localStorage.getItem('fitmarket.shop.cart.v1')||'[]'),
+    sales:JSON.parse(localStorage.getItem('fitmarket.shop.sales.v1')||'[]')
+  }));
+  if (afterDecline.items.length !== 1 || afterDecline.sales.length !== 1) throw Error('Declined demo payment changed sale or cart');
+  await declined.close();
   console.log('VISUAL_SMOKE_PASSED');
  }finally {await browser.close();}
 })().catch(err=>{console.error(err);process.exitCode=1}).finally(()=>server.close());
