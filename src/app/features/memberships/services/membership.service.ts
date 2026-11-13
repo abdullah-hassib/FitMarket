@@ -152,6 +152,32 @@ export class MembershipService {
     return this.save(updated);
   }
 
+
+  /** A cancellation is allowed for exactly seven days after demo activation. */
+  canCancelSubscription(userId: number, subscription: MembershipSubscription, now = Date.now()): boolean {
+    if (subscription.userId !== userId || subscription.status !== 'active' || !subscription.startDate) {
+      return false;
+    }
+
+    const startedAt = Date.parse(subscription.startDate);
+    return Number.isFinite(startedAt) &&
+      now >= startedAt &&
+      now - startedAt <= 7 * 24 * 60 * 60 * 1000;
+  }
+
+  /** Cancellation stops demo access; it does not refund or erase a paid invoice. */
+  cancelSubscription(userId: number, subscriptionId: string): boolean {
+    const subscription = this.subscriptions().find(item => item.id === subscriptionId);
+    if (!subscription || !this.canCancelSubscription(userId, subscription)) return false;
+
+    const updated = this.subscriptions().map(item =>
+      item.id === subscriptionId
+        ? { ...item, status: 'cancelled' as const, cancelledAt: new Date().toISOString() }
+        : item
+    );
+    return this.save(updated);
+  }
+
   // Restore data from browser storage
   private load(): MembershipSubscription[] {
     try {
