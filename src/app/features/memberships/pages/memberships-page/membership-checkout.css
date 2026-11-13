@@ -30,3 +30,7 @@
 .cancel-btn:hover { background: var(--accent); color: #fff; }
 .history-item .fine-print { text-align: left; }
 @media (max-width: 840px) { .membership-checkout { grid-template-columns: minmax(0, 1fr); } }
+
+.history { margin: 10px 0 36px; }
+.membership-note { color: var(--text-muted); background: var(--surface-alt); border-radius: 10px; padding: 10px 12px; }
+.membership-note a { color: var(--accent-light); font-weight: 750; }
