@@ -21,4 +21,5 @@ export interface MembershipSubscription {
   createdAt: string;
   startDate?: string;
   endDate?: string;
+  cancelledAt?: string;
 }
