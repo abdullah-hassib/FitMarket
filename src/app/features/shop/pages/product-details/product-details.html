@@ -1,0 +1,96 @@
+
+@if (product(); as selectedProduct) {
+  <section class="product-details">
+    
+<h1>{{ selectedProduct.name }}</h1>
+
+<!-- PRODUCT IMAGE -->
+@if (selectedProduct.imageUrl) {
+  <img
+    class="product-detail-image"
+    [src]="selectedProduct.imageUrl"
+    [alt]="selectedProduct.name"
+  />
+}
+
+<!-- PRODUCT DESCRIPTION -->
+@if (selectedProduct.description) {
+  <p class="product-description">
+    {{ selectedProduct.description }}
+  </p>
+}
+
+<p>Category: {{ selectedProduct.category }}</p>
+
+    @if ((selectedProduct.discountPercent ?? 0) > 0) {
+  <p class="original-price">
+    {{ selectedProduct.price }} EGP
+  </p>
+
+  <p class="discount-label">
+    Save {{ selectedProduct.discountPercent }}%
+  </p>
+}
+
+<p class="final-price">
+  {{ discountedPrice() }} EGP
+</p>
+
+    @if (selectedProduct.stock > 0) {
+      <p>In Stock: {{ selectedProduct.stock }}</p>
+    } @else {
+      <p>Out of Stock</p>
+    }
+
+    @if (selectedProduct.stock > 0) {
+      <div class="quantity-selector">
+        <h3>Select Quantity</h3>
+
+        <button
+          type="button"
+          (click)="decreaseQuantity()"
+          [disabled]="quantity() <= 1"
+          aria-label="Decrease quantity"
+        >
+          -
+        </button>
+
+        <span>{{ quantity() }}</span>
+
+        <button
+          type="button"
+          (click)="increaseQuantity()"
+          [disabled]="!canIncrease()"
+          aria-label="Increase quantity"
+        >
+          +
+        </button>
+
+        <!-- ADD TO CART BUTTON -->
+                <button
+          type="button"
+          (click)="addToCart()"
+        >
+          Add to Cart
+        </button>
+      </div>
+
+      <a routerLink="/shop/cart" class="view-cart-btn">
+        View Cart
+      </a>
+    }
+
+    <!-- CART FEEDBACK MESSAGE -->
+    <p role="status" aria-live="polite">
+      {{ cartMessage() }}
+    </p>
+  
+<a routerLink="/shop" class="back-to-shop">
+  ← Back to Shop
+</a>
+
+  </section>
+} @else {
+  <h2>Product not found</h2>
+  <p>The requested product does not exist.</p>
+}

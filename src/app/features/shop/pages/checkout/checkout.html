@@ -1,0 +1,29 @@
+
+<section class="checkout-page">
+  <h1>Checkout</h1>
+
+  <p>This is a simulated checkout. No real payment will be processed.</p>
+
+  @if (cart.items().length === 0) {
+    <p>Your cart is empty.</p>
+  } @else {
+    <div class="checkout-summary">
+      <h2>Order Summary</h2>
+
+      <p>Items: {{ cart.itemCount() }}</p>
+      <p>Subtotal: {{ cart.subtotal() }} EGP</p>
+      <p>Discount: -{{ cart.discountTotal() }} EGP</p>
+      <h3>Total: {{ cart.total() }} EGP</h3>
+      <button
+        type="button"
+        (click)="placeOrder()"
+      >
+        Place Order (Demo)
+      </button>
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <p role="alert">{{ errorMessage() }}</p>
+  }
+</section>

@@ -1,0 +1,29 @@
+
+@if (sale(); as order) {
+  <section class="order-confirmation">
+    <h1>Order Confirmed!</h1>
+
+    <p>Your simulated purchase was completed successfully.</p>
+
+    <h2>Order #{{ order.id }}</h2>
+    <p>Date: {{ order.date }}</p>
+
+    <h3>Purchase Summary</h3>
+
+    @for (item of order.items; track item.productId) {
+      <div class="order-item">
+        <p>Product ID: {{ item.productId }}</p>
+        <p>Quantity: {{ item.quantity }}</p>
+        <p>Unit Price: {{ item.unitPrice }} EGP</p>
+        <p>Line Total: {{ item.quantity * item.unitPrice }} EGP</p>
+      </div>
+    }
+
+    <h3>Subtotal: {{ order.subtotal }} EGP</h3>
+    <p>Discount: {{ order.discountAmount }} EGP</p>
+    <h2>Total: {{ order.total }} EGP</h2>
+  </section>
+} @else {
+  <h2>Order not found</h2>
+  <p>The requested order could not be found.</p>
+}
