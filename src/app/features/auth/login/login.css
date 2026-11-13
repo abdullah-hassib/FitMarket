@@ -37,3 +37,11 @@ button:disabled {
 .login-success {
   margin-top: 20px;
 }
+
+.login-container { background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:38px;box-shadow:var(--shadow); }
+.login-container h1 { font-size:clamp(30px,5vw,44px);letter-spacing:-.055em; }
+.login-container input { background:var(--surface-alt);color:var(--text);border-color:var(--line-bright);border-radius:10px; }
+.login-container button { background:var(--accent);border-radius:10px;font-weight:800; }
+.login-container button:hover:not(:disabled) { background:var(--accent-light);color:#17171a; }
+.login-container .error { color:var(--accent-light); }
+@media(max-width:500px) { .login-container { margin:24px 14px;padding:25px; } }

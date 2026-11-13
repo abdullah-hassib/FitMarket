@@ -147,3 +147,16 @@
     margin-right: 0;
   }
 }
+
+
+/* Charcoal cart surfaces and red primary actions */
+.cart-page { color:var(--text); }
+.cart-page h1 { font-size:clamp(32px,4vw,48px); letter-spacing:-.055em; }
+.cart-item,.cart-summary { background:var(--surface); border-color:var(--line); border-radius:18px; box-shadow:var(--shadow); }
+.cart-item p { color:var(--text-muted); }
+.cart-actions button,.cart-summary button { background:var(--surface-alt); border-color:var(--line); color:var(--text); border-radius:9px; }
+.cart-actions button:hover:not(:disabled) { background:var(--surface-hover); border-color:var(--accent); }
+.cart-summary h3 { color:var(--text); }
+.checkout-btn { background:var(--accent); color:white; box-shadow:0 8px 26px rgba(240,68,85,.20); }
+.checkout-btn:hover { background:var(--accent-light); color:#111; }
+.checkout-btn:focus-visible { outline-color:var(--accent); }

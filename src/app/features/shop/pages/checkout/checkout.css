@@ -90,3 +90,14 @@
     padding: 20px;
   }
 }
+
+
+.checkout-page { color:var(--text); }
+.checkout-page h1 { font-size:clamp(34px,5vw,52px); letter-spacing:-.055em; }
+.checkout-page > p,.checkout-summary p { color:var(--text-muted); }
+.checkout-summary { background:var(--surface); border-color:var(--line); border-radius:20px; box-shadow:var(--shadow); }
+.checkout-summary h3 { color:var(--text); border-top-color:var(--line); }
+.checkout-summary button { background:var(--accent); border-radius:11px; box-shadow:0 8px 26px rgba(240,68,85,.2); }
+.checkout-summary button:hover { background:var(--accent-light); color:#17171a; }
+.checkout-summary button:focus-visible { outline-color:var(--accent); }
+.checkout-page [role="alert"] { color:#ffb4bd; background:var(--accent-soft); border-color:rgba(240,68,85,.4); }

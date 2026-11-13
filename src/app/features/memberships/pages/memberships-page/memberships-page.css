@@ -94,3 +94,16 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.memberships-page { color:var(--text); }
+.page-heading h1 { font-size:clamp(36px,5vw,56px);letter-spacing:-.06em; }
+.plan-card { background:linear-gradient(160deg,var(--surface-alt),var(--surface));border:1px solid var(--line);border-radius:20px;box-shadow:0 20px 45px rgba(0,0,0,.15);transition:transform .25s,border-color .25s; }
+.plan-card:hover { transform:translateY(-5px);border-color:rgba(240,68,85,.48); }
+.plan-card .price { color:var(--accent-light); }
+.plan-card .duration { color:var(--text-muted); }
+.subscribe-btn { background:var(--accent);font-weight:850;border-radius:11px; }
+.subscribe-btn:hover:not(:disabled) { background:var(--accent-light);color:#17171a; }
+.feedback { background:var(--accent-soft);border:1px solid rgba(240,68,85,.24);border-radius:11px; }
+.history-item { background:var(--surface);border-color:var(--line);border-radius:12px; }
+.status { color:var(--accent-light); }

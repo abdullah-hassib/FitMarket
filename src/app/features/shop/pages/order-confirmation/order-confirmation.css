@@ -66,3 +66,12 @@
     font-size: 22px;
   }
 }
+
+
+.order-confirmation { background:var(--surface); color:var(--text); border-color:var(--line); border-radius:22px; box-shadow:var(--shadow); }
+.order-confirmation h1 { color:var(--accent-light); font-size:clamp(32px,5vw,48px); }
+.order-confirmation > p,.order-item p { color:var(--text-muted); }
+.order-item { border-bottom-color:var(--line); }
+.order-confirmation h2:last-child { color:var(--text); border-top-color:var(--line); }
+.order-history-link { display:inline-flex;margin-top:22px;padding:12px 20px;border-radius:10px;background:var(--accent);color:white;text-decoration:none;font-weight:800; }
+.order-history-link:hover { background:var(--accent-light);color:#151519; }

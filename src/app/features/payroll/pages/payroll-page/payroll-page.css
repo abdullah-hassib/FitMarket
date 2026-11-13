@@ -7,3 +7,20 @@ button, input, select { font: inherit; } .export { border: 0; border-radius: .55
 .notice { margin: .9rem 0 1.25rem; padding: .75rem 1rem; border-left: 4px solid #d79a2d; background: #fff8e9; color: #5d481c; font-size: .9rem; }.summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.25rem; }.summary article { padding: 1rem; border: 1px solid #d7e2db; border-radius: .7rem; background: white; }.summary span, small { display: block; color: #64716a; }.summary strong { display: block; margin-top: .35rem; color: #1d6d48; font-size: 1.25rem; }
 .table-wrap { overflow-x: auto; border: 1px solid #d7e2db; border-radius: .7rem; } table { width: 100%; min-width: 860px; border-collapse: collapse; background: white; } caption { padding: 1rem; text-align: left; font-weight: 700; } th, td { padding: .8rem; border-top: 1px solid #e4ece7; text-align: left; vertical-align: middle; } th { background: #f5f8f6; color: #435149; font-size: .8rem; } td input { min-width: 100px; }.net { color: #17633f; font-weight: 800; }
 @media (max-width: 680px) { .page-header { display: grid; }.export { width: 100%; }.controls, .summary { grid-template-columns: 1fr; } .payroll-page { padding-top: 1.25rem; } }
+
+
+.payroll-page { color:var(--text);padding-top:48px; }
+.payroll-page h1 { font-size:clamp(35px,5vw,54px);letter-spacing:-.06em; }
+.payroll-page .eyebrow { color:var(--accent-light); }
+.payroll-page .page-header p:not(.eyebrow),.payroll-page small,.payroll-page .summary span { color:var(--text-muted); }
+.payroll-page .export { background:var(--accent);color:white;border-radius:10px; }
+.payroll-page .export:hover { background:var(--accent-light);color:#17171a; }
+.payroll-page .controls { background:var(--surface);border:1px solid var(--line);border-radius:16px; }
+.payroll-page input,.payroll-page select { background:var(--surface-alt);border:1px solid var(--line-bright);border-radius:10px;color:var(--text); }
+.payroll-page .notice { border-left-color:var(--warning);background:#302820;color:#f1cf9e;border-radius:10px; }
+.payroll-page .summary article { background:var(--surface);border-color:var(--line);border-radius:16px;padding:23px; }
+.payroll-page .summary strong,.payroll-page .net { color:var(--accent-light); }
+.payroll-page .table-wrap { background:var(--surface);border-color:var(--line);border-radius:16px; }
+.payroll-page table { background:var(--surface); }
+.payroll-page th { background:var(--surface-alt);color:var(--text-muted); }
+.payroll-page th,.payroll-page td { border-top-color:var(--line); }
