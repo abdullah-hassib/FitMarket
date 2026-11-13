@@ -43,7 +43,7 @@ async function open(browser, pathname, filename, viewport, userId){
       localStorage.setItem('fitmarket.shop.sales.v1',JSON.stringify([s]));
       localStorage.setItem('fitmarket_student_fees_v1',JSON.stringify(f));
       if(id)sessionStorage.setItem('fitmarket_session_user_id_v1',String(id));
-      if(seedCart)localStorage.setItem('fitmarket.shop.cart.v1',JSON.stringify([{productId:1,quantity:2}]));
+      if(seedCart && location.pathname === '/shop/checkout')localStorage.setItem('fitmarket.shop.cart.v1',JSON.stringify([{productId:1,quantity:2}]));
     }catch{}
   },userId,sale,fees,pathname === '/shop/checkout');
   await page.goto(rootUrl+pathname,{waitUntil:'networkidle0'});
