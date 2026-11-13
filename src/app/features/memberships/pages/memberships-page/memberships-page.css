@@ -107,3 +107,39 @@
 .feedback { background:var(--accent-soft);border:1px solid rgba(240,68,85,.24);border-radius:11px; }
 .history-item { background:var(--surface);border-color:var(--line);border-radius:12px; }
 .status { color:var(--accent-light); }
+
+/* Shared visual language with shop checkout; checkout.css is imported by this component. */
+.membership-checkout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(270px, .8fr);
+  align-items: start;
+  gap: 24px;
+  margin-top: 36px;
+  scroll-margin-top: 140px;
+}
+.membership-checkout .summary-panel { position: static; }
+.close-payment {
+  margin-top: 18px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line-bright);
+  color: var(--text);
+  background: var(--surface-alt);
+  cursor: pointer;
+}
+.membership-history-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.cancel-btn {
+  margin-top: 8px;
+  padding: 11px 15px;
+  color: var(--accent-light);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 800;
+}
+.cancel-btn:hover { background: var(--accent); color: #fff; }
+.history-item .fine-print { text-align: left; }
+@media (max-width: 840px) {
+  .membership-checkout { grid-template-columns: minmax(0, 1fr); }
+}
