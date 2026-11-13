@@ -1,29 +1,95 @@
-
 <section class="checkout-page">
-  <h1>Checkout</h1>
-
-  <p>This is a simulated checkout. No real payment will be processed.</p>
+  <header class="checkout-heading">
+    <p class="eyebrow">FITMARKET / CHECKOUT</p>
+    <h1>Complete your order.</h1>
+    <p>Test-card checkout only. No payment gateway is connected and no real charge is made.</p>
+  </header>
 
   @if (cart.items().length === 0) {
-    <p>Your cart is empty.</p>
-  } @else {
-    <div class="checkout-summary">
-      <h2>Order Summary</h2>
-
-      <p>Items: {{ cart.itemCount() }}</p>
-      <p>Subtotal: {{ cart.subtotal() }} EGP</p>
-      <p>Discount: -{{ cart.discountTotal() }} EGP</p>
-      <h3>Total: {{ cart.total() }} EGP</h3>
-      <button
-        type="button"
-        (click)="placeOrder()"
-      >
-        Place Order (Demo)
-      </button>
+    <div class="empty-cart">
+      <h2>Your cart is empty.</h2>
+      <p>Add something from the shop before checking out.</p>
+      <a href="/shop">Continue shopping</a>
     </div>
-  }
+  } @else {
+    <div class="checkout-layout">
+      <form class="payment-panel" (ngSubmit)="placeOrder()" #paymentForm="ngForm" autocomplete="off" [attr.aria-busy]="processing()">
+        <div class="panel-heading">
+          <div>
+            <span class="step">01 / PAYMENT</span>
+            <h2>Demo card details</h2>
+          </div>
+          <span class="demo-badge">TEST ONLY</span>
+        </div>
 
-  @if (errorMessage()) {
-    <p role="alert">{{ errorMessage() }}</p>
+        <p class="privacy-note">Choose a test card below, or enter its fictional details. Never enter actual card information.</p>
+        <div class="test-cards" aria-label="Choose a predefined demo card">
+          @for (card of testCards; track card.id) {
+            <button type="button" class="test-card" [class.selected]="cardNumber === card.number"
+              (click)="selectTestCard(card.number)" [disabled]="processing()">
+              <span class="card-icon" aria-hidden="true">▰</span>
+              <span>{{ card.name }}</span>
+              <small>{{ card.outcome === 'declined' ? 'Decline demo' : 'Approved demo' }}</small>
+            </button>
+          }
+        </div>
+
+        <fieldset [disabled]="processing()">
+          <label for="demo-cardholder">Cardholder name</label>
+          <input id="demo-cardholder" type="text" name="cardholder" [(ngModel)]="cardholder"
+            autocomplete="off" required minlength="2" maxlength="80" placeholder="Demo Customer" />
+
+          <label for="demo-card-number">Test card number</label>
+          <input id="demo-card-number" type="text" name="cardNumber" [(ngModel)]="cardNumber"
+            autocomplete="off" inputmode="numeric" required minlength="16" maxlength="23"
+            placeholder="4242 4242 4242 4242" aria-describedby="card-hint" />
+          <small id="card-hint">Only the displayed fictional numbers work.</small>
+
+          <div class="form-row">
+            <div class="field">
+              <label for="demo-expiry">Expiry (MM/YY)</label>
+              <input id="demo-expiry" type="text" name="expiry" [(ngModel)]="expiry"
+                autocomplete="off" required maxlength="5" pattern="(0[1-9]|1[0-2])/[0-9]{2}"
+                placeholder="12/30" />
+            </div>
+            <div class="field">
+              <label for="demo-cvv">Demo CVV</label>
+              <input id="demo-cvv" type="password" name="cvv" [(ngModel)]="cvv"
+                autocomplete="off" inputmode="numeric" required maxlength="3"
+                pattern="[0-9]{3}" placeholder="123" />
+            </div>
+          </div>
+          <p class="test-hint">For approved test cards, enter <strong>12/30</strong> and demo CVV <strong>123</strong>. The declined card lets you test error handling.</p>
+        </fieldset>
+
+        @if (errorMessage()) {
+          <p class="payment-error" role="alert">{{ errorMessage() }}</p>
+        }
+
+        <button class="pay-button" type="submit" [disabled]="paymentForm.invalid || processing()">
+          @if (processing()) {
+            <span class="spinner" aria-hidden="true"></span>
+            Processing demo payment…
+          } @else {
+            Confirm {{ cart.total() }} EGP (Demo)
+          }
+        </button>
+
+        <p class="fine-print">A successful simulation records an order and reduces demo stock. Card number, expiry and CVV are never saved.</p>
+      </form>
+
+      <aside class="summary-panel" aria-label="Order summary">
+        <span class="step">02 / REVIEW</span>
+        <h2>Order summary</h2>
+        <div class="summary-row"><span>Items</span><strong>{{ cart.itemCount() }}</strong></div>
+        <div class="summary-row"><span>Subtotal</span><strong>{{ cart.subtotal() }} EGP</strong></div>
+        <div class="summary-row discount"><span>Discount</span><strong>−{{ cart.discountTotal() }} EGP</strong></div>
+        <div class="summary-total">
+          <span>Total due</span>
+          <strong>{{ cart.total() }} EGP</strong>
+        </div>
+        <p class="summary-disclaimer">Payment is simulated. The order appears in My Orders after approval.</p>
+      </aside>
+    </div>
   }
 </section>
