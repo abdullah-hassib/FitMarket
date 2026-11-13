@@ -107,6 +107,8 @@
                       (click)="payInvoice(invoice.id)">
                       Pay (Demo)
                     </button>
+                  } @else if (invoice.status === 'void') {
+                    <span>Cancelled</span>
                   } @else {
                     <span>Completed</span>
                   }
