@@ -1,1 +1,61 @@
-/* You can add global styles to this file, and also import other style files */
+/* FitMarket design system — charcoal, graphite and performance red */
+:root {
+  color-scheme: dark;
+  font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+  --bg: #101014;
+  --bg-soft: #15151b;
+  --surface: #1b1b22;
+  --surface-alt: #25252e;
+  --surface-hover: #30303a;
+  --line: #35353f;
+  --line-bright: #55515c;
+  --text: #f7f7f9;
+  --text-muted: #aaabb8;
+  --accent: #f04455;
+  --accent-light: #ff7482;
+  --accent-deep: #a91b36;
+  --accent-soft: rgba(240, 68, 85, .12);
+  --success: #78d9b0;
+  --warning: #f0c07d;
+  --radius: 16px;
+  --shadow: 0 24px 70px rgba(0,0,0,.25);
+}
+* { box-sizing: border-box; }
+html { min-height: 100%; scroll-behavior: smooth; }
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  color: var(--text);
+  background:
+    radial-gradient(ellipse 72% 34% at 87% -15%, rgba(240,68,85,.13), transparent 70%),
+    radial-gradient(ellipse 55% 40% at -25% 60%, rgba(240,68,85,.05), transparent 70%),
+    var(--bg);
+  font-family: Inter, "Segoe UI", system-ui, sans-serif;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+h1,h2,h3,h4 { color: var(--text); letter-spacing: -.035em; line-height: 1.2; }
+p { color: inherit; }
+a { color: var(--accent-light); text-underline-offset: 4px; transition: color .2s ease; }
+a:hover { color: #ffa0a9; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; transition: background .2s ease, border-color .2s ease, transform .2s ease; }
+button:disabled { opacity: .55; cursor: not-allowed; }
+button:not(:disabled):active { transform: translateY(1px); }
+input, select, textarea {
+  max-width: 100%;
+  background: var(--surface-alt);
+  border: 1px solid var(--line-bright);
+  border-radius: 10px;
+  color: var(--text);
+}
+input::placeholder, textarea::placeholder { color: #9494a1; }
+select option { background: var(--surface); color: var(--text); }
+:focus-visible { outline: 3px solid var(--accent-light); outline-offset: 3px; }
+::selection { background: var(--accent-deep); color: white; }
+main { min-height: calc(100vh - 140px); }
+table { font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
