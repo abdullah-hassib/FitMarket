@@ -1,33 +1,20 @@
-
 <section class="memberships-page">
-
   <div class="page-heading">
     <h1>FitMarket Memberships</h1>
-    <p>Choose the fitness membership that works for you.</p>
+    <p>Choose the fitness membership that works for you. All payments are simulated.</p>
   </div>
 
   @if (message()) {
-    <p class="feedback" role="status">
-      {{ message() }}
-    </p>
+    <p class="feedback" role="status">{{ message() }}</p>
   }
 
   <div class="plans-grid">
     @for (plan of memberships.plans; track plan.id) {
       <article class="plan-card">
-
         <h2>{{ plan.name }}</h2>
-
-        <p class="price">
-          {{ plan.priceEGP }} EGP
-        </p>
-
-        <p class="duration">
-          Duration: {{ plan.durationMonths }} month(s)
-        </p>
-
+        <p class="price">{{ plan.priceEGP }} EGP</p>
+        <p class="duration">Duration: {{ plan.durationMonths }} month(s)</p>
         <h3>Included benefits</h3>
-
         <ul>
           @for (benefit of plan.benefits; track benefit) {
             <li>{{ benefit }}</li>
@@ -35,65 +22,130 @@
         </ul>
 
         @if (!auth.isLoggedIn()) {
-          <a routerLink="/login" class="subscribe-btn">
-            Login to Subscribe
-          </a>
+          <a routerLink="/login" class="subscribe-btn">Login to Subscribe</a>
         } @else {
-          <button
-            type="button"
-            class="subscribe-btn"
-            [disabled]="!canSubscribe()"
-            (click)="subscribe(plan.id)"
-          >
-            Request Membership
+          <button type="button" class="subscribe-btn"
+            [disabled]="!canSubscribe() || processing()" (click)="selectPlan(plan.id)">
+            Select Membership
           </button>
         }
-
       </article>
     }
   </div>
 
-  @if (auth.currentUser()) {
+  @if (selectedPlan(); as plan) {
+    <section id="membership-payment" class="membership-checkout" aria-label="Membership payment">
+      <form class="payment-panel" (ngSubmit)="confirmSubscription()" #paymentForm="ngForm"
+        autocomplete="off" [attr.aria-busy]="processing()">
+        <div class="panel-heading">
+          <div>
+            <span class="step">01 / PAYMENT</span>
+            <h2>Demo card details</h2>
+          </div>
+          <span class="demo-badge">TEST ONLY</span>
+        </div>
+
+        <p class="privacy-note">Choose a test card or enter its fictional details. Do not use real card information.</p>
+        <div class="test-cards" aria-label="Choose a predefined demo card">
+          @for (card of testCards; track card.id) {
+            <button type="button" class="test-card" [class.selected]="cardNumber === card.number"
+              (click)="selectTestCard(card.number)" [disabled]="processing()">
+              <span class="card-icon" aria-hidden="true">▰</span>
+              <span>{{ card.name }}</span>
+              <small>{{ card.outcome === 'declined' ? 'Decline demo' : 'Approved demo' }}</small>
+            </button>
+          }
+        </div>
+
+        <fieldset [disabled]="processing()">
+          <label for="membership-cardholder">Cardholder name</label>
+          <input id="membership-cardholder" type="text" name="cardholder" [(ngModel)]="cardholder"
+            autocomplete="off" required minlength="2" maxlength="80" placeholder="Demo Customer" />
+
+          <label for="membership-card-number">Test card number</label>
+          <input id="membership-card-number" type="text" name="cardNumber" [(ngModel)]="cardNumber"
+            autocomplete="off" inputmode="numeric" required minlength="16" maxlength="23"
+            placeholder="4242 4242 4242 4242" aria-describedby="membership-card-hint" />
+          <small id="membership-card-hint">Only the displayed fictional numbers work.</small>
+
+          <div class="form-row">
+            <div class="field">
+              <label for="membership-expiry">Expiry (MM/YY)</label>
+              <input id="membership-expiry" type="text" name="expiry" [(ngModel)]="expiry"
+                autocomplete="off" required maxlength="5" pattern="(0[1-9]|1[0-2])/[0-9]{2}"
+                placeholder="12/30" />
+            </div>
+            <div class="field">
+              <label for="membership-cvv">Demo CVV</label>
+              <input id="membership-cvv" type="password" name="cvv" [(ngModel)]="cvv"
+                autocomplete="off" inputmode="numeric" required maxlength="3"
+                pattern="[0-9]{3}" placeholder="123" />
+            </div>
+          </div>
+          <p class="test-hint">For approved test cards use <strong>12/30</strong> and demo CVV <strong>123</strong>. The declined card tests the failure state.</p>
+        </fieldset>
+
+        @if (paymentError()) {
+          <p class="payment-error" role="alert">{{ paymentError() }}</p>
+        }
+
+        <button class="pay-button" type="submit" [disabled]="paymentForm.invalid || processing()">
+          @if (processing()) {
+            <span class="spinner" aria-hidden="true"></span>
+            Processing demo payment…
+          } @else {
+            Confirm {{ plan.priceEGP }} EGP (Demo)
+          }
+        </button>
+        <p class="fine-print">A successful simulation activates the membership and creates a paid invoice. CVV and card numbers are never stored.</p>
+      </form>
+
+      <aside class="summary-panel" aria-label="Membership summary">
+        <span class="step">02 / REVIEW</span>
+        <h2>Membership summary</h2>
+        <div class="summary-row"><span>Plan</span><strong>{{ plan.name }}</strong></div>
+        <div class="summary-row"><span>Duration</span><strong>{{ plan.durationMonths }} month(s)</strong></div>
+        <div class="summary-total">
+          <span>Total due</span>
+          <strong>{{ plan.priceEGP }} EGP</strong>
+        </div>
+        <p class="summary-disclaimer">Demo payment only. You may cancel within seven days after activation; cancellation does not refund the simulated payment.</p>
+        <button type="button" class="close-payment" (click)="selectedPlanId.set(null)" [disabled]="processing()">Back to plans</button>
+      </aside>
+    </section>
+  }
+
+  @if (auth.currentUser(); as user) {
     <section class="history">
       <h2>My Membership History</h2>
-
       @if (userSubscriptions().length === 0) {
         <p>No memberships requested yet.</p>
       } @else {
         @for (subscription of userSubscriptions(); track subscription.id) {
           <article class="history-item">
-
-            <strong>
-              {{ memberships.getPlan(subscription.planId)?.name }}
-            </strong>
-
-            <span class="status">
-              {{ subscription.status }}
-            </span>
-
-            <p>
-              Requested:
-              {{ subscription.createdAt | date:'mediumDate' }}
-            </p>
-
+            <div class="membership-history-heading">
+              <strong>{{ memberships.getPlan(subscription.planId)?.name }}</strong>
+              <span class="status">{{ subscription.status }}</span>
+            </div>
+            <p>Requested: {{ subscription.createdAt | date:'mediumDate' }}</p>
             @if (subscription.startDate) {
-              <p>
-                Started:
-                {{ subscription.startDate | date:'mediumDate' }}
-              </p>
+              <p>Started: {{ subscription.startDate | date:'mediumDate' }}</p>
             }
-
-            @if (subscription.endDate) {
-              <p>
-                Expires:
-                {{ subscription.endDate | date:'mediumDate' }}
-              </p>
+            @if (subscription.endDate && subscription.status !== 'cancelled') {
+              <p>Expires: {{ subscription.endDate | date:'mediumDate' }}</p>
             }
-
+            @if (subscription.cancelledAt) {
+              <p>Cancelled: {{ subscription.cancelledAt | date:'mediumDate' }}</p>
+            }
+            @if (memberships.canCancelSubscription(user.id, subscription)) {
+              <button type="button" class="cancel-btn" (click)="cancelSubscription(subscription.id)">
+                Cancel membership (within 7 days)
+              </button>
+              <p class="fine-print">Cancellation ends access immediately. No demo refund will be issued.</p>
+            }
           </article>
         }
       }
     </section>
   }
-
 </section>
