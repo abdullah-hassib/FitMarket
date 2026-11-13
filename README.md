@@ -57,3 +57,7 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+## Milestone 1 test runner
+
+The course requires Jasmine/Karma. `npm test` runs the 94 unit tests with Jasmine in Chrome (use `npm test -- --no-watch --browsers=ChromeHeadless` for one CI run). Angular 22 also supports Vitest; `npm run test:vitest` is retained as an optional compatibility check. The GitHub Actions workflow verifies both runners and the production build.
