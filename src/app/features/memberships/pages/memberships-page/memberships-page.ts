@@ -6,6 +6,7 @@ import { RouterLink } from '@angular/router';
 import { Auth } from '../../../../core/auth/auth';
 import { MembershipService } from '../../services/membership.service';
 import { StudentFeesService } from '../../../student-fees/services/student-fees.service';
+import { RefundRecord } from '../../../student-fees/models/invoice.model';
 import { DemoPayment, TEST_CARDS } from '../../../shop/services/demo-payment';
 import { Feedback } from '../../../../shared/services/feedback';
 import { Sound } from '../../../../shared/services/sound';
@@ -117,6 +118,20 @@ export class MembershipsPage {
     } finally {
       this.processing.set(false);
     }
+  }
+
+  feesRefundForSubscription(subscriptionId: string): RefundRecord | undefined {
+    const user = this.auth.currentUser();
+    const invoice = this.fees.invoices().find(i =>
+      i.subscriptionId === subscriptionId && i.userId === user?.id
+    );
+    return invoice ? this.fees.refunds().find(r =>
+      r.invoiceId === invoice.id && r.userId === user?.id
+    ) : undefined;
+  }
+
+  canRetryRefund(subscriptionId: string): boolean {
+    return this.fees.canIssueRefundForSubscription(subscriptionId);
   }
 
   retryRefund(subscriptionId: string): void {
