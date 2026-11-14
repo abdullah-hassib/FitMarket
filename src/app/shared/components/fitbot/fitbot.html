@@ -1,0 +1,33 @@
+<div class="fitbot-widget">
+  @if (open()) {
+    <section id="fitbot-panel" class="fitbot-panel" aria-labelledby="fitbot-title">
+      <header class="fitbot-header">
+        <div>
+          <strong id="fitbot-title">FitBot</strong>
+          <span>FitMarket Help & Support</span>
+        </div>
+        <button type="button" class="fitbot-close" aria-label="Close FitBot" (click)="close()">×</button>
+      </header>
+      <iframe
+        title="Chat with FitBot"
+        src="https://bots.easy-peasy.ai/bot/14571691-cec1-4916-b035-f6bb55f7a445?mode=embedded"
+        loading="lazy"
+        referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      <div class="fitbot-footer">
+        If chat does not load,
+        <a [href]="botUrl" target="_blank" rel="noopener noreferrer">open FitBot directly</a>.
+      </div>
+    </section>
+  }
+
+  <button
+    type="button"
+    class="fitbot-toggle"
+    [attr.aria-expanded]="open()"
+    aria-controls="fitbot-panel"
+    [attr.aria-label]="open() ? 'Close FitBot support chat' : 'Open FitBot support chat'"
+    (click)="toggle()">
+    <span aria-hidden="true">{{ open() ? '×' : '💬' }}</span>
+    <span>{{ open() ? 'Close chat' : 'Ask FitBot' }}</span>
+  </button>
+</div>

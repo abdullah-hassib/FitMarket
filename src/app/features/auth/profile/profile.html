@@ -13,6 +13,19 @@
         />
       }
 
+      <div class="profile-photo-picker">
+        <label for="profile-photo">Choose a new profile picture</label>
+        <input id="profile-photo" type="file" accept="image/jpeg,image/png,image/webp"
+          (change)="onPictureSelected($event)" [disabled]="photoLoading" />
+        <small>JPG, PNG or WebP, up to 400 KB. Stored locally in this browser.</small>
+        @if (photoMessage) {
+          <p class="photo-success" role="status">{{ photoMessage }}</p>
+        }
+        @if (photoError) {
+          <p class="photo-error" role="alert">{{ photoError }}</p>
+        }
+      </div>
+
       <h2>{{ user.name }}</h2>
 
       <p><strong>Username:</strong> {{ user.username }}</p>

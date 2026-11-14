@@ -13,17 +13,19 @@ describe('BudgetStore access and updates', () => {
   let store: BudgetStore;
   const saleSnapshot = signal<SaleRecord[]>([]);
   const paymentSnapshot = signal<{ id: string; invoiceId: string; amountEGP: number; paidAt: string }[]>([]);
+  const refundSnapshot = signal<{ id: string; invoiceId: string; amountEGP: number; refundedAt: string }[]>([]);
   beforeEach(() => {
     role.set(null);
     saleSnapshot.set([]);
     paymentSnapshot.set([]);
+    refundSnapshot.set([]);
     localStorage.removeItem('fitmarket.budgets.manual.v1');
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
         { provide: BUDGET_ROLE, useValue: role },
         { provide: Sales, useValue: { sales: saleSnapshot.asReadonly() } },
-        { provide: StudentFeesService, useValue: { payments: paymentSnapshot.asReadonly() } }
+        { provide: StudentFeesService, useValue: { payments: paymentSnapshot.asReadonly(), refunds: refundSnapshot.asReadonly() } }
       ],
     });
     store = TestBed.inject(BudgetStore);
@@ -85,6 +87,20 @@ describe('BudgetStore access and updates', () => {
     expect(ledger.reduce((sum, row) => sum + row.amount, 0)).toBe(770);
     saleSnapshot.set([]);
     expect(store.ledger().some(row => row.id === 'sale:77')).toBe(false);
+  });
+
+  it('records membership refunds as Training expenses without removing the original revenue', () => {
+    role.set('accountant');
+    paymentSnapshot.set([
+      { id: 'p1', invoiceId: 'i1', amountEGP: 1200, paidAt: '2026-11-13T09:00:00.000Z' }
+    ]);
+    refundSnapshot.set([
+      { id: 'r1', invoiceId: 'i1', amountEGP: 1200, refundedAt: '2026-11-13T10:00:00.000Z' }
+    ]);
+    const ledger = store.ledger();
+    expect(ledger.find(row => row.id === 'membership:p1')?.type).toBe('income');
+    expect(ledger.find(row => row.id === 'membership-refund:r1')?.type).toBe('expense');
+    expect(ledger.find(row => row.id === 'membership-refund:r1')?.amount).toBe(1200);
   });
 
   it('replaces sales snapshots instead of appending on refresh', () => {

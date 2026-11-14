@@ -52,14 +52,14 @@
         autocomplete="new-password"
       />
 
-      <label for="picture">Profile Picture URL (optional)</label>
-      <input
-        id="picture"
-        name="picture"
-        type="url"
-        [(ngModel)]="profilePicture"
-        placeholder="https://example.com/photo.jpg"
-      />
+      <label for="picture">Profile Picture (optional)</label>
+      <input id="picture" name="picture" type="file" accept="image/jpeg,image/png,image/webp"
+        (change)="onPictureSelected($event)" aria-describedby="profile-photo-hint" />
+      <small id="profile-photo-hint">Choose a JPG, PNG or WebP file (maximum 400 KB). Stored in this browser for the demo.</small>
+      @if (profilePicture) {
+        <img [src]="profilePicture" alt="Selected profile photo preview"
+          style="width:90px;height:90px;object-fit:cover;border-radius:50%;border:2px solid var(--accent)" />
+      }
 
       <label for="preferences">Fitness Preferences (optional)</label>
       <input
@@ -91,7 +91,7 @@
         </p>
       }
 
-      <button type="submit" [disabled]="signupForm.invalid">
+      <button type="submit" [disabled]="signupForm.invalid || photoLoading">
         Create Account
       </button>
 
