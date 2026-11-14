@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, Injector, afterNextRender, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -19,6 +19,7 @@ import { Sound } from '../../../../shared/services/sound';
 })
 export class MembershipsPage {
   readonly auth = inject(Auth);
+  private readonly injector = inject(Injector);
   readonly memberships = inject(MembershipService);
   private readonly fees = inject(StudentFeesService);
   private readonly payment = inject(DemoPayment);
@@ -45,23 +46,40 @@ export class MembershipsPage {
     return user ? this.memberships.getUserSubscriptions(user.id) : [];
   });
 
+  readonly blockingSubscription = computed(() =>
+    this.userSubscriptions().find(sub => sub.status === 'pending' || sub.status === 'active')
+  );
+
   readonly canSubscribe = computed(() => {
     const user = this.auth.currentUser();
-    return !!user && user.role === 'trainee' &&
-      !this.userSubscriptions().some(sub => sub.status === 'pending' || sub.status === 'active');
+    return !!user && user.role === 'trainee' && !this.blockingSubscription();
   });
 
   selectPlan(planId: string): void {
-    if (!this.canSubscribe() || !this.memberships.getPlan(planId) || this.processing()) {
-      this.message.set('You cannot subscribe right now.');
+    const plan = this.memberships.getPlan(planId);
+    if (!this.canSubscribe() || !plan || this.processing()) {
+      this.message.set(this.blockingSubscription()
+        ? 'You already have a pending or active membership. Review My Membership History before choosing another plan.'
+        : 'You must be signed in as a trainee to select a membership.');
       return;
     }
+
     this.paymentSuccess.set(false);
     this.selectedPlanId.set(planId);
     this.cardholder = this.auth.currentUser()?.name ?? '';
     this.cvv = '';
     this.paymentError.set('');
-    this.message.set('');
+    this.message.set(`${plan.name} membership selected. Complete the demo payment below.`);
+
+    // Angular only creates the conditional checkout after this render.
+    // Scroll and focus after rendering so the user sees the next step immediately.
+    afterNextRender(() => {
+      const checkout = document.getElementById('membership-payment');
+      if (!checkout) return;
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      checkout.scrollIntoView({ behavior: reduceMotion ? 'instant' : 'smooth', block: 'start' });
+      checkout.focus({ preventScroll: true });
+    }, { injector: this.injector });
   }
 
   selectTestCard(number: string): void {
