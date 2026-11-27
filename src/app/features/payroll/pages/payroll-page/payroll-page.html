@@ -5,12 +5,23 @@
       <h1>Staff payroll</h1>
       <p>Monthly salary, adjustments, and credited shop-sale commission.</p>
     </div>
-    <button class="export" type="button" (click)="exportJson()">Export monthly JSON</button>
+    <div class="header-actions">
+      <button type="button" (click)="runPayroll()" [disabled]="!canEdit() || saving()">
+        {{ saving() ? 'Saving…' : 'Save monthly payroll' }}
+      </button>
+      <button class="export" type="button" (click)="exportJson()" [disabled]="!canEdit()">
+        Export monthly JSON
+      </button>
+    </div>
   </header>
+
+  @if (errorMessage(); as error) {
+    <div class="payroll-alert" role="alert">{{ error }}</div>
+  }
 
   <section class="controls" aria-label="Payroll controls">
     <label>Payroll month <input type="month" [ngModel]="selectedMonth()" (ngModelChange)="selectedMonth.set($event)" /></label>
-    
+
     <label>Demo commission rate (%)
       <input type="number" min="0" max="100" step="0.5" [ngModel]="commissionRatePercent()" (ngModelChange)="commissionRatePercent.set($event)" [disabled]="!canEdit()" />
     </label>
@@ -23,23 +34,27 @@
     <article><span>Net payroll</span><strong>{{ totals().netSalary | currency:'EGP':'symbol':'1.2-2' }}</strong></article>
   </section>
 
-  <div class="table-wrap">
-    <table>
-      <caption>Payroll earnings breakdown for {{ selectedMonth() }}</caption>
-      <thead><tr><th>Employee</th><th>Base salary</th><th>Allowances</th><th>Deductions</th><th>Eligible sales</th><th>Commission</th><th>Net salary</th></tr></thead>
-      <tbody>
-        @for (row of rows(); track row.employee.id) {
-          <tr>
-            <td><strong>{{ row.employee.name }}</strong><small>#{{ row.employee.id }} · {{ row.employee.jobTitle }}</small></td>
-            <td><input aria-label="Base salary for {{ row.employee.name }}" type="number" min="0" [ngModel]="row.baseSalary" (ngModelChange)="updateEmployee(row.employee.id, 'baseSalary', $event)" [disabled]="!canEdit()" /></td>
-            <td><input aria-label="Allowances for {{ row.employee.name }}" type="number" min="0" [ngModel]="row.allowances" (ngModelChange)="updateAdjustment(row.employee.id, 'allowances', $event)" [disabled]="!canEdit()" /></td>
-            <td><input aria-label="Deductions for {{ row.employee.name }}" type="number" min="0" [ngModel]="row.deductions" (ngModelChange)="updateAdjustment(row.employee.id, 'deductions', $event)" [disabled]="!canEdit()" /></td>
-            <td>{{ row.eligibleSalesCount }} / {{ row.eligibleSalesTotal | currency:'EGP':'symbol':'1.2-2' }}</td>
-            <td>{{ row.commission | currency:'EGP':'symbol':'1.2-2' }}</td>
-            <td class="net">{{ row.netSalary | currency:'EGP':'symbol':'1.2-2' }}</td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div>
+  @if (loading()) {
+    <p>Loading payroll records…</p>
+  } @else {
+    <div class="table-wrap">
+      <table>
+        <caption>Payroll earnings breakdown for {{ selectedMonth() }}</caption>
+        <thead><tr><th>Employee</th><th>Base salary</th><th>Allowances</th><th>Deductions</th><th>Eligible sales</th><th>Commission</th><th>Net salary</th></tr></thead>
+        <tbody>
+          @for (row of rows(); track row.employee.id) {
+            <tr>
+              <td><strong>{{ row.employee.name }}</strong><small>#{{ row.employee.id }} · {{ row.employee.jobTitle }}</small></td>
+              <td><input aria-label="Base salary for {{ row.employee.name }}" type="number" min="0" [ngModel]="row.baseSalary" (ngModelChange)="updateEmployee(row.employee.id, 'baseSalary', $event)" [disabled]="!canEdit()" /></td>
+              <td><input aria-label="Allowances for {{ row.employee.name }}" type="number" min="0" [ngModel]="row.allowances" (ngModelChange)="updateAdjustment(row.employee.id, 'allowances', $event)" [disabled]="!canEdit()" /></td>
+              <td><input aria-label="Deductions for {{ row.employee.name }}" type="number" min="0" [ngModel]="row.deductions" (ngModelChange)="updateAdjustment(row.employee.id, 'deductions', $event)" [disabled]="!canEdit()" /></td>
+              <td>{{ row.eligibleSalesCount }} / {{ row.eligibleSalesTotal | currency:'EGP':'symbol':'1.2-2' }}</td>
+              <td>{{ row.commission | currency:'EGP':'symbol':'1.2-2' }}</td>
+              <td class="net">{{ row.netSalary | currency:'EGP':'symbol':'1.2-2' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
 </section>
