@@ -1,39 +1,163 @@
-
 <section class="profile-container">
   <h1>My FitMarket Profile</h1>
 
   @if (auth.currentUser(); as user) {
-    <article class="profile-card">
+    @if (auth.hasRole('admin')) {
+      <div class="admin-lookup">
+        <label>
+          Inspect user ID
+          <input
+            type="number"
+            min="1"
+            [ngModel]="targetUserId()"
+            (ngModelChange)="targetUserId.set(+$event || user.id)"
+          />
+        </label>
+        <button type="button" class="secondary" (click)="loadProfile(targetUserId() ?? user.id)">
+          Load profile
+        </button>
+      </div>
+    }
 
-      @if (user.profilePicture) {
-        <img
-          class="profile-picture"
-          [src]="user.profilePicture"
-          [alt]="user.name + ' profile picture'"
-        />
-      }
+    @if (errorMessage(); as error) {
+      <div class="profile-alert" role="alert">
+        {{ error }}
+      </div>
+    }
 
-      <h2>{{ user.name }}</h2>
+    @if (loading()) {
+      <p class="loading-state">Loading profile…</p>
+    } @else if (editing()) {
+      <form class="profile-card profile-form" (ngSubmit)="saveProfile()">
+        <h2>{{ profile() ? 'Edit Profile' : 'Create Profile' }}</h2>
 
-      <p><strong>Username:</strong> {{ user.username }}</p>
-      <p><strong>Email:</strong> {{ user.email }}</p>
-      <p><strong>Account role:</strong> {{ user.role }}</p>
+        <label>
+          Full name
+          <input name="name" type="text" [ngModel]="formName()" (ngModelChange)="formName.set($event)" required />
+          @if (fieldErrors()['name']; as errs) {
+            <small class="field-error">{{ errs[0] }}</small>
+          }
+        </label>
 
-      <p>
-        <strong>Fitness preferences:</strong>
-        {{ user.preferences?.join(', ') || 'Not provided' }}
-      </p>
+        <label>
+          Email
+          <input name="email" type="email" [ngModel]="formEmail()" (ngModelChange)="formEmail.set($event)" required />
+          @if (fieldErrors()['email']; as errs) {
+            <small class="field-error">{{ errs[0] }}</small>
+          }
+        </label>
 
-      <p>
-        <strong>Demo payment method:</strong>
-        {{ user.demoCard || 'Not provided' }}
-      </p>
+        <label>
+          Phone
+          <input name="phone" type="text" [ngModel]="formPhone()" (ngModelChange)="formPhone.set($event)" />
+          @if (fieldErrors()['phone']; as errs) {
+            <small class="field-error">{{ errs[0] }}</small>
+          }
+        </label>
 
-      <a routerLink="/shop/orders" class="profile-orders-link">View My Orders</a>
-      <button type="button" (click)="auth.logout()">
-        Logout
-      </button>
-    </article>
+        <label>
+          Fitness goal
+          <input
+            name="fitnessGoal"
+            type="text"
+            [ngModel]="formFitnessGoal()"
+            (ngModelChange)="formFitnessGoal.set($event)"
+            placeholder="e.g. Strength & conditioning"
+          />
+        </label>
+
+        <label>
+          Preferences (comma-separated)
+          <input
+            name="preferences"
+            type="text"
+            [ngModel]="formPreferencesText()"
+            (ngModelChange)="formPreferencesText.set($event)"
+            placeholder="e.g. Protein, Dumbbells"
+          />
+        </label>
+
+        <label>
+          Profile picture URL
+          <input
+            name="profilePicture"
+            type="url"
+            [ngModel]="formProfilePicture()"
+            (ngModelChange)="formProfilePicture.set($event)"
+          />
+        </label>
+
+        <label>
+          Bio
+          <textarea
+            name="bio"
+            rows="3"
+            [ngModel]="formBio()"
+            (ngModelChange)="formBio.set($event)"
+          ></textarea>
+          @if (fieldErrors()['bio']; as errs) {
+            <small class="field-error">{{ errs[0] }}</small>
+          }
+        </label>
+
+        <div class="profile-actions">
+          <button type="submit" [disabled]="saving()">
+            {{ saving() ? 'Saving…' : (profile() ? 'Save Changes' : 'Create Profile') }}
+          </button>
+          <button type="button" class="secondary" (click)="cancelEdit()" [disabled]="saving()">
+            Cancel
+          </button>
+        </div>
+      </form>
+    } @else if (profile(); as currentProfile) {
+      <article class="profile-card">
+        @if (currentProfile.profilePicture) {
+          <img
+            class="profile-picture"
+            [src]="currentProfile.profilePicture"
+            [alt]="currentProfile.name + ' profile picture'"
+          />
+        }
+
+        <h2>{{ currentProfile.name }}</h2>
+
+        <p><strong>Username:</strong> {{ user.username }}</p>
+        <p><strong>Email:</strong> {{ currentProfile.email }}</p>
+        <p><strong>Account role:</strong> {{ user.role }}</p>
+        <p><strong>Phone:</strong> {{ currentProfile.phone || 'Not provided' }}</p>
+        <p><strong>Fitness goal:</strong> {{ currentProfile.fitnessGoal || 'Not provided' }}</p>
+        <p><strong>Bio:</strong> {{ currentProfile.bio || 'Not provided' }}</p>
+
+        <p>
+          <strong>Fitness preferences:</strong>
+          {{ currentProfile.preferences.join(', ') || 'Not provided' }}
+        </p>
+
+        <p>
+          <strong>Demo payment method:</strong>
+          {{ user.demoCard || 'Not provided' }}
+        </p>
+
+        <div class="profile-actions">
+          <button type="button" (click)="startEdit()">Edit Profile</button>
+          <button type="button" class="danger" (click)="deleteProfile()" [disabled]="saving()">
+            Delete Profile
+          </button>
+          <a routerLink="/shop/orders" class="profile-orders-link">View My Orders</a>
+          <button type="button" class="secondary" (click)="auth.logout()">Logout</button>
+        </div>
+      </article>
+    } @else {
+      <article class="profile-card">
+        <h2>No profile record found</h2>
+        <p>Create a profile to save your contact details and fitness goals.</p>
+        <div class="profile-actions">
+          <button type="button" (click)="startEdit()">Create Profile</button>
+          <button type="button" class="secondary" (click)="loadProfile()">Retry</button>
+          <button type="button" class="secondary" (click)="auth.logout()">Logout</button>
+        </div>
+      </article>
+    }
   } @else {
     <p>You must log in to view your profile.</p>
     <a routerLink="/login">Go to Login</a>

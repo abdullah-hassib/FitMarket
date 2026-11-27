@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { NormalizedApiError, normalizeHttpError } from '../../core/http/api-error';
 
 export type FeedbackKind = 'success' | 'error';
 export interface FeedbackNotice {
@@ -22,6 +23,20 @@ export class Feedback {
     this.timeout = setTimeout(() => {
       if (this.notice()?.id === id) this.dismiss();
     }, 3500);
+  }
+
+  success(message: string): void {
+    this.show('success', message);
+  }
+
+  error(message: string): void {
+    this.show('error', message);
+  }
+
+  fromHttpError(err: unknown): NormalizedApiError {
+    const normalized = normalizeHttpError(err);
+    this.show('error', normalized.message);
+    return normalized;
   }
 
   dismiss(): void {
